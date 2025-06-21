@@ -28,8 +28,12 @@ class Package(models.Model):
         null=True  
     )
     altitude = models.DecimalField(
-        max_digits=10000,
+        max_digits=7,
         decimal_places=2,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(10000),
+        ]
     )
     difficulty = models.CharField(
         max_length=10,
@@ -41,3 +45,12 @@ class Package(models.Model):
         ],
         default='MEDIUM', 
     )
+
+class PackageImage(models.Model):
+    package = models.ForeignKey(Package, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='package_images/')
+    alt_text = models.CharField(max_length=255, blank=True)
+    order = models.PositiveSmallIntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order']
