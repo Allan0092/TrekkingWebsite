@@ -1,8 +1,10 @@
 import {
+  ChevronDownIcon,
   CurrencyDollarIcon,
   ShieldCheckIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
@@ -42,6 +44,43 @@ const Homepage = () => {
     autoplay: true,
     autoplaySpeed: 3000,
     arrows: true,
+  };
+
+  const faqs = [
+    {
+      question: "Is the Internet available in the Everest region?",
+      answer:
+        "For internet usage, the Everest region has a network “Everest Link” which can be bought for around NPR 600-800 (USD 5-7) for 6GB that can be used at one destination, or you can pay NPR 2500 (USD 21) for 10GB data that can be used in the regions that have access to Everest link.",
+    },
+    {
+      question:
+        "Is it possible to obtain a visa for Nepal upon arrival at the airport?",
+      answer:
+        "Yes, you can obtain a Nepal visa upon your arrival at the airport. There are kiosks in the arrival hall that you use to complete the necessary forms. The cost is USD 30 for a 15-day tourist visa, including numerous entries, or USD 50 and USD 125 for a 30-day or 90-day tourist visa including numerous entries respectively. You should carry cash (USD) with you to pay your visa fees quickly and easily, as digital payments are frequently unavailable. To save time, we recommend filling out the online visa application form in advance. Applying online 2 weeks before your arrival will expedite the process at the airport.",
+    },
+    {
+      question:
+        "Is the food in the mountains prepared to international standards in terms of safety?",
+      answer:
+        "Indeed, the guesthouses follow international guidelines while setting up the food and serve you clean, protected, and warm meals.",
+    },
+    {
+      question:
+        "What kind of physical training is necessary for trek preparation?",
+      answer:
+        "For trekking, you must prepare your body to walk over uneven, hilly landscapes while carrying a backpack. Walking at an incline, jogging, cycling, and going for long-distance hikes are all good ways to exercise. You should work out for at least one hour four to five times a week for at least two months before trekking.",
+    },
+    {
+      question: "Where can I exchange money upon arrival in Nepal?",
+      answer:
+        "You can exchange currency at one of the money exchange counters in the arrivals area of Tribhuvan International Airport, which operate 24 hours a day. Alternatively, you can also exchange money at authorized exchange centers near your hotel, which are typically open during the day.",
+    },
+  ];
+
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
   };
 
   return (
@@ -132,6 +171,35 @@ const Homepage = () => {
               Dedicated support for a memorable experience.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Frequently Asked Questions Section */}
+      <div className="container mx-auto p-4 py-12">
+        <h2 className="text-[32px] font-bold text-center mb-8">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div key={index} className="border rounded-lg">
+              <button
+                className="w-full flex justify-between items-center p-4 text-left"
+                onClick={() => toggleFaq(index)}
+              >
+                <span className="text-[24px] font-bold">{faq.question}</span>
+                <ChevronDownIcon
+                  className={`h-6 w-6 transform transition-transform ${
+                    openFaq === index ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {openFaq === index && (
+                <div className="p-4 text-[18px] font-medium bg-gray-100">
+                  {faq.answer}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
