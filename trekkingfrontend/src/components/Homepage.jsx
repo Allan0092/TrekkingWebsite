@@ -78,9 +78,16 @@ const Homepage = () => {
   ];
 
   const [openFaq, setOpenFaq] = useState(null);
+  const [email, setEmail] = useState("");
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    console.log("Subscribed with email:", email);
+    setEmail("");
   };
 
   return (
@@ -200,6 +207,37 @@ const Homepage = () => {
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Subscribe to Newsletter Section */}
+      <div className="container mx-auto p-4 py-12 bg-blue-50">
+        <h2 className="text-[32px] font-bold text-center mb-4">
+          Subscribe to Our Newsletter
+        </h2>
+        <p className="text-[24px] font-medium text-center mb-6">
+          Stay updated with our latest trekking packages and exclusive offers!
+        </p>
+        <div className="flex justify-center">
+          <form
+            onSubmit={handleSubscribe}
+            className="flex flex-col sm:flex-row gap-4 max-w-lg w-full"
+          >
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="p-3 text-[18px] font-medium border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            <button
+              type="submit"
+              className="p-3 bg-blue-500 text-white text-[20px] font-bold rounded-lg hover:bg-blue-600"
+            >
+              Subscribe
+            </button>
+          </form>
         </div>
       </div>
     </div>
