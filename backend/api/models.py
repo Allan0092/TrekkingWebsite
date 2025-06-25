@@ -1,12 +1,10 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import AbstractUser
 
-class Task(models.Model):
-    title = models.CharField(max_length=200)
-    completed = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.title
+# class CustomUser(AbstractUser):
+    # full_name
 
 class Package(models.Model):
     title = models.CharField(max_length=300)
@@ -45,6 +43,9 @@ class Package(models.Model):
         ],
         default='MEDIUM', 
     )
+
+    def __str__(self):
+        return self.name
 
 class PackageImage(models.Model):
     package = models.ForeignKey(Package, related_name='images', on_delete=models.CASCADE)
