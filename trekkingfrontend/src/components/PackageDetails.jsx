@@ -1,66 +1,52 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import PackageImageUpload from "./PackageImageUpload";
 
 const PackageDetails = () => {
   const { id } = useParams();
-  const [packageData, setPackageData] = useState(null);
+  const [pkg, setPkg] = useState(null);
   const [error, setError] = useState("");
+  const isAdmin = true; // Replace with actual auth check
 
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/packages/${id}/`)
-      .then((response) => setPackageData(response.data))
-      .catch((err) =>
-        setError("Failed to load package details. Please try again.")
-      );
+      .then((response) => setPkg(response.data))
+      .catch((error) => {
+        console.error("Error fetching package:", error);
+        setError("Failed to load package details.");
+      });
   }, [id]);
 
-  if (error) {
-    return (
-      <div className="container mx-auto p-4">
-        <p className="text-red-500">{error}</p>
-        <Link to="/packages" className="text-blue-500">
-          Return to Packages
-        </Link>
-      </div>
-    );
-  }
-
-  if (!packageData) {
-    return <div className="container mx-auto p-4">Loading...</div>;
-  }
+  if (error)
+    return <p className="text-red-500 text-[24px] font-medium">{error}</p>;
+  if (!pkg) return <p className="text-[24px] font-medium">Loading...</p>;
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      <Link to="/packages" className="text-blue-500 mb-4 inline-block">
-        &larr; Back to Packages
-      </Link>
-      <h1 className="text-3xl font-bold mb-4">{packageData.name}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-lg">
-            <strong>Duration:</strong> {packageData.duration} days
-          </p>
-          <p className="text-lg">
-            <strong>Price:</strong> ${packageData.price}
-          </p>
-          <p className="text-lg">
-            <strong>Difficulty:</strong> {packageData.difficulty}
-          </p>
+    <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
+      <h1 className="text-[64px] font-bold mb-4">{pkg.title}</h1>
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="md:w-1/2">
+          {pkg.images && pkg.images.length > 0 ? (
+            <img
+              src={`${pkg.images[0].image}`}
+              alt={pkg.images[0].alt_text || pkg.title}
+              className="w-full h-64 object-cover rounded-lg mb-4"
+            />
+          ) : (
+            <p className="text-[24px] font-medium">No images available.</p>
+          )}
         </div>
-        <div>
-          {/* Placeholder for package image */}
-          <div className="bg-gray-200 h-48 rounded flex items-center justify-center">
-            <span>Package Image</span>
-          </div>
+        <div className="md:w-1/2">
+          <p className="text-[24px] font-medium mb-2">
+            Duration: {pkg.duration} days | Price: ${pkg.price || "N/A"} |
+            Difficulty: {pkg.difficulty} | Altitude: {pkg.altitude}m
+          </p>
+          <p className="text-[24px] font-medium">{pkg.description}</p>
         </div>
       </div>
-      <h2 className="text-2xl font-semibold mb-2">Itinerary</h2>
-      <p className="text-gray-700">{packageData.itinerary}</p>
-      <button className="mt-6 p-2 bg-blue-500 text-white rounded">
-        Book Now
-      </button>
+      {isAdmin && <PackageImageUpload packageId={id} />}
     </div>
   );
 };

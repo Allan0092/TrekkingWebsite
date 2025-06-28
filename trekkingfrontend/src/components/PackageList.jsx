@@ -47,7 +47,7 @@ const PackageList = () => {
             >
               {pkg.images && pkg.images.length > 0 && (
                 <img
-                  src={`http://localhost:8000${pkg.images[0].image}`}
+                  src={`${pkg.images[0].image}`}
                   alt={pkg.images[0].alt_text || pkg.title}
                   className="w-full sm:w-1/3 h-48 object-cover rounded-lg"
                 />

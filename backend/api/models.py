@@ -45,7 +45,7 @@ class Package(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.title
 
 class PackageImage(models.Model):
     package = models.ForeignKey(Package, related_name='images', on_delete=models.CASCADE)
