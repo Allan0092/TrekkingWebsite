@@ -1,10 +1,4 @@
-import {
-  ArrowTrendingUpIcon,
-  ArrowUpIcon,
-  BookmarkIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-} from "@heroicons/react/24/outline";
+import { BookmarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
@@ -43,7 +37,7 @@ const PackageList = () => {
       return [];
     }
     const sortedPackages = [...packagesToSort];
-    console.log("Sorting with:", sortBy, sortedPackages); // Debug
+    console.log("Sorting with:", sortBy, sortedPackages);
     switch (sortBy) {
       case "latest":
         return sortedPackages.sort(
@@ -111,6 +105,21 @@ const PackageList = () => {
   const handleBookmark = (pkgId) => {
     console.log(`Bookmarked package ${pkgId}`);
     // Implement bookmark functionality
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-500";
+      case "MEDIUM":
+        return "text-blue-500";
+      case "TOUGH":
+        return "text-orange-500";
+      case "VERY_TOUGH":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
+    }
   };
 
   return (
@@ -195,26 +204,46 @@ const PackageList = () => {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
                 <div className="flex items-center">
-                  <ClockIcon className="h-6 w-6 text-blue-500 mr-2" />
-                  <p className="text-[24px] font-medium text-blue-500">
+                  <img
+                    src="/icons/calendar.png"
+                    alt="Calendar"
+                    className="h-6 w-6 mr-2"
+                  />
+                  <p className="text-[24px] font-medium">
                     {pkg.duration || "N/A"} days
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <CurrencyDollarIcon className="h-6 w-6 text-green-500 mr-2" />
-                  <p className="text-[24px] font-medium text-green-500">
+                  <img
+                    src="/icons/dollar.png"
+                    alt="Price"
+                    className="h-6 w-6 mr-2"
+                  />
+                  <p className="text-[24px] font-medium">
                     ${pkg.price || "N/A"}
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <ArrowUpIcon className="h-6 w-6 text-purple-500 mr-2" />
-                  <p className="text-[24px] font-medium text-purple-500">
+                  <img
+                    src="/icons/mountain_peak.png"
+                    alt="Altitude"
+                    className="h-6 w-6 mr-2"
+                  />
+                  <p className="text-[24px] font-medium">
                     {pkg.altitude || "N/A"}m
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <ArrowTrendingUpIcon className="h-6 w-6 text-red-500 mr-2" />
-                  <p className="text-[24px] font-medium text-red-500">
+                  <img
+                    src="/icons/difficulty.png"
+                    alt="Difficulty"
+                    className="h-6 w-6 mr-2"
+                  />
+                  <p
+                    className={`text-[24px] font-medium ${getDifficultyColor(
+                      pkg.difficulty
+                    )}`}
+                  >
                     {pkg.difficulty || "N/A"}
                   </p>
                 </div>
