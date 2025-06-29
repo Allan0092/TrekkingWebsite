@@ -24,9 +24,8 @@ const PackageList = () => {
         setIsLoading(true);
         const response = await fetch("http://localhost:8000/api/packages/");
         if (!response.ok) throw new Error("Failed to fetch packages");
-
         const data = await response.json();
-        console.log("Fetched data:", data); // Debug output
+        console.log("Fetched data:", data);
         setPackages(data);
       } catch (err) {
         console.error("Error fetching packages:", err);
@@ -40,38 +39,51 @@ const PackageList = () => {
   }, []);
 
   const sortPackages = (packagesToSort) => {
-    // Ensure we have an array to sort
     if (!Array.isArray(packagesToSort) || packagesToSort.length === 0) {
       return [];
     }
-
-    // Create a copy to avoid mutating the original array
     const sortedPackages = [...packagesToSort];
-
+    console.log("Sorting with:", sortBy, sortedPackages); // Debug
     switch (sortBy) {
       case "latest":
         return sortedPackages.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          (a, b) =>
+            new Date(b.created_at || "1970-01-01") -
+            new Date(a.created_at || "1970-01-01")
         );
-      case "price_low":
-        return sortedPackages.sort((a, b) => {
-          // Handle null, undefined, or string values
-          const priceA = a.price ? parseFloat(a.price) : Infinity;
-          const priceB = b.price ? parseFloat(b.price) : Infinity;
-          return priceA - priceB;
-        });
-      case "price_high":
+      case "price-high":
         return sortedPackages.sort((a, b) => {
           const priceA = a.price ? parseFloat(a.price) : 0;
           const priceB = b.price ? parseFloat(b.price) : 0;
           return priceB - priceA;
         });
-      case "duration":
+      case "price-low":
         return sortedPackages.sort((a, b) => {
-          // Ensure duration is treated as a number
+          const priceA = a.price ? parseFloat(a.price) : 0;
+          const priceB = b.price ? parseFloat(b.price) : 0;
+          return priceA - priceB;
+        });
+      case "duration-short":
+        return sortedPackages.sort((a, b) => {
           const durationA = Number(a.duration) || 0;
           const durationB = Number(b.duration) || 0;
           return durationA - durationB;
+        });
+      case "duration-long":
+        return sortedPackages.sort((a, b) => {
+          const durationA = Number(a.duration) || 0;
+          const durationB = Number(b.duration) || 0;
+          return durationB - durationA;
+        });
+      case "difficulty-easy":
+        return sortedPackages.sort((a, b) => {
+          const order = { EASY: 1, MEDIUM: 2, TOUGH: 3, VERY_TOUGH: 4 };
+          return (order[a.difficulty] || 4) - (order[b.difficulty] || 4);
+        });
+      case "difficulty-hard":
+        return sortedPackages.sort((a, b) => {
+          const order = { EASY: 4, MEDIUM: 3, TOUGH: 2, VERY_TOUGH: 1 };
+          return (order[a.difficulty] || 1) - (order[b.difficulty] || 1);
         });
       default:
         return sortedPackages;
@@ -79,14 +91,16 @@ const PackageList = () => {
   };
 
   const filteredPackages = packages.filter((pkg) =>
-    pkg.title.toLowerCase().includes(search.toLowerCase())
+    pkg.title && typeof pkg.title === "string"
+      ? pkg.title.toLowerCase().includes(search.toLowerCase())
+      : false
   );
 
   const displayPackages = sortPackages(filteredPackages);
 
   const sliderSettings = {
     dots: true,
-    infinite: false, // Disable infinite for single image
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -129,9 +143,15 @@ const PackageList = () => {
       {error && (
         <p className="text-[24px] font-medium text-red-500 mb-4">{error}</p>
       )}
-      {isLoading && <div className="text-center py-4">Loading packages...</div>}
+      {isLoading && (
+        <div className="text-[24px] font-medium text-center py-4">
+          Loading packages...
+        </div>
+      )}
       {!isLoading && displayPackages.length === 0 && (
-        <div className="text-center py-4">No packages found.</div>
+        <div className="text-[24px] font-medium text-center py-4">
+          No packages found.
+        </div>
       )}
       <div className="space-y-6">
         {displayPackages.map((pkg) => (
