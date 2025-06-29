@@ -43,6 +43,7 @@ class Package(models.Model):
         ],
         default='MEDIUM', 
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
