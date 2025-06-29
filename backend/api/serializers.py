@@ -13,4 +13,4 @@ class PackageSerializer(serializers.ModelSerializer):
     images = PackageImageSerializer(many=True, read_only=True)
     class Meta:
         model = Package
-        fields = '__all__'
+        fields = ['id', 'title', 'description', 'duration', 'price', 'altitude', 'difficulty', 'created_at', 'images']
