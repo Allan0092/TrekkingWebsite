@@ -100,6 +100,19 @@ const PackageList = () => {
     slidesToScroll: 1,
     arrows: false,
     dotsClass: "slick-dots slick-dots-custom",
+    appendDots: (dots) => (
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <ul style={{ margin: "0", padding: "0" }}> {dots} </ul>
+      </div>
+    ),
   };
 
   const handleBookmark = (pkgId) => {
@@ -120,6 +133,13 @@ const PackageList = () => {
       default:
         return "text-gray-500";
     }
+  };
+
+  const formatDifficulty = (difficulty) => {
+    if (difficulty === "VERY_TOUGH") {
+      return "Very Tough";
+    }
+    return difficulty || "N/A";
   };
 
   return (
@@ -168,7 +188,7 @@ const PackageList = () => {
             key={pkg.id}
             className="border rounded-lg p-6 flex flex-col md:flex-row gap-6 bg-white shadow-md"
           >
-            <div className="md:w-1/4">
+            <div className="md:w-1/4 w-full">
               {pkg.images && pkg.images.length > 0 ? (
                 pkg.images.length === 1 ? (
                   <img
@@ -177,17 +197,19 @@ const PackageList = () => {
                     className="w-full h-48 object-cover rounded-lg"
                   />
                 ) : (
-                  <Slider {...sliderSettings}>
-                    {pkg.images.map((img) => (
-                      <div key={img.id}>
-                        <img
-                          src={img.image}
-                          alt={img.alt_text || pkg.title}
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      </div>
-                    ))}
-                  </Slider>
+                  <div className="relative">
+                    <Slider {...sliderSettings}>
+                      {pkg.images.map((img) => (
+                        <div key={img.id}>
+                          <img
+                            src={img.image}
+                            alt={img.alt_text || pkg.title}
+                            className="w-full h-48 object-cover rounded-lg"
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  </div>
                 )
               ) : (
                 <p className="text-[24px] font-medium text-gray-500">
@@ -244,7 +266,7 @@ const PackageList = () => {
                       pkg.difficulty
                     )}`}
                   >
-                    {pkg.difficulty || "N/A"}
+                    {formatDifficulty(pkg.difficulty)}
                   </p>
                 </div>
               </div>
