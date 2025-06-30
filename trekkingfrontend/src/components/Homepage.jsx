@@ -44,6 +44,7 @@ const Homepage = () => {
     autoplay: true,
     autoplaySpeed: 3000,
     arrows: true,
+    dotsClass: "slick-dots slick-dots-custom",
   };
 
   const faqs = [
@@ -91,9 +92,9 @@ const Homepage = () => {
   };
 
   return (
-    <div className="bg-[#F6FFFF] text-black font-inter">
+    <div className="bg-[#F6FFFF] text-black font-inter overflow-x-hidden">
       {/* Photo Slider */}
-      <div className="w-full">
+      <div className="max-w-full overflow-hidden">
         <Slider {...sliderSettings}>
           {slides.map((slide) => (
             <div key={slide.id}>
