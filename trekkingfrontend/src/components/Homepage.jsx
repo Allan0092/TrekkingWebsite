@@ -4,13 +4,17 @@ import {
   ShieldCheckIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
 const Homepage = () => {
+  const [packages, setPackages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const slides = [
     {
       id: 1,
@@ -81,6 +85,26 @@ const Homepage = () => {
   const [openFaq, setOpenFaq] = useState(null);
   const [email, setEmail] = useState("");
 
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("http://localhost:8000/api/packages/");
+        if (!response.ok) throw new Error("Failed to fetch packages");
+        const data = await response.json();
+        console.log("Fetched packages:", data);
+        setPackages(data.slice(0, 3)); // Limit to 3 packages
+      } catch (err) {
+        console.error("Error fetching packages:", err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []);
+
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
@@ -89,6 +113,13 @@ const Homepage = () => {
     e.preventDefault();
     console.log("Subscribed with email:", email);
     setEmail("");
+  };
+
+  const formatDifficulty = (difficulty) => {
+    if (difficulty === "VERY_TOUGH") {
+      return "Very Tough";
+    }
+    return difficulty || "N/A";
   };
 
   return (
@@ -124,32 +155,69 @@ const Homepage = () => {
         <h1 className="text-[64px] font-bold mb-4">
           Welcome to Trekking Website Treks
         </h1>
-        <p className="text-[24px] font-medium mb-4">
-          Explore Nepal’s iconic trekking routes.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 border rounded">
-            <h2 className="text-[32px] font-bold">Annapurna Base Camp</h2>
-            <p className="text-[24px] font-medium">7 days | $800 | Moderate</p>
-            <Link to="/packages/1" className="text-blue-500">
-              View Details
-            </Link>
-          </div>
-          <div className="p-4 border rounded">
-            <h2 className="text-[32px] font-bold">Everest Base Camp</h2>
-            <p className="text-[24px] font-medium">14 days | $1500 | Hard</p>
-            <Link to="/packages/2" className="text-blue-500">
-              View Details
-            </Link>
-          </div>
-          <div className="p-4 border rounded">
-            <h2 className="text-[32px] font-bold">Manaslu Circuit</h2>
-            <p className="text-[24px] font-medium">12 days | $1200 | Hard</p>
-            <Link to="/packages/3" className="text-blue-500">
-              View Details
-            </Link>
-          </div>
+        <div className="flex items-center mb-4">
+          <img
+            src="/icons/crown.png"
+            alt="Crown Icon"
+            className="h-8 w-8 mr-2"
+          />
+          <h2 className="text-[24px] font-medium">Our Top Picks for 2025</h2>
+          <Link
+            to="/packages"
+            className="ml-auto text-[18px] font-medium text-blue-500 hover:text-blue-600"
+          >
+            View All
+          </Link>
         </div>
+        {error && (
+          <p className="text-[24px] font-medium text-red-500 mb-4">{error}</p>
+        )}
+        {isLoading && (
+          <div className="text-[24px] font-medium text-center py-4">
+            Loading packages...
+          </div>
+        )}
+        {!isLoading && packages.length === 0 && (
+          <div className="text-[24px] font-medium text-center py-4">
+            No packages available.
+          </div>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {packages.map((pkg) => (
+            <div
+              key={pkg.id}
+              className="p-4 border rounded-lg bg-white shadow-md"
+            >
+              {pkg.images && pkg.images.length > 0 ? (
+                <img
+                  src={pkg.images[0].image}
+                  alt={pkg.images[0].alt_text || pkg.title}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                  <p className="text-[18px] font-medium text-gray-500">
+                    No image available
+                  </p>
+                </div>
+              )}
+              <h2 className="text-[32px] font-bold mb-2">
+                {pkg.title || "Unnamed Package"}
+              </h2>
+              <p className="text-[24px] font-medium mb-4">
+                {pkg.duration || "N/A"} days | ${pkg.price || "N/A"} |{" "}
+                {formatDifficulty(pkg.difficulty)}
+              </p>
+              <Link
+                to={`/packages/${pkg.id}`}
+                className="text-blue-500 hover:text-blue-600"
+              >
+                View Details
+              </Link>
+            </div>
+          ))}
+        </div>
+        <hr className="mt-8 border-gray-200" />
       </div>
 
       {/* Why Choose Us Section */}
@@ -180,6 +248,7 @@ const Homepage = () => {
             </p>
           </div>
         </div>
+        <hr className="mt-8 border-gray-200" />
       </div>
 
       {/* Frequently Asked Questions Section */}
@@ -209,6 +278,7 @@ const Homepage = () => {
             </div>
           ))}
         </div>
+        <hr className="mt-8 border-gray-200" />
       </div>
 
       {/* Subscribe to Newsletter Section */}
