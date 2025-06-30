@@ -49,6 +49,7 @@ const Homepage = () => {
     autoplaySpeed: 3000,
     arrows: true,
     dotsClass: "slick-dots slick-dots-custom",
+    fade: true,
   };
 
   const faqs = [
@@ -124,22 +125,25 @@ const Homepage = () => {
 
   return (
     <div className="bg-[#F6FFFF] text-black font-inter overflow-x-hidden">
-      {/* Photo Slider */}
-      <div className="max-w-full overflow-hidden">
+      {/* Hero Slider */}
+      <div className="relative max-w-full overflow-hidden">
         <Slider {...sliderSettings}>
           {slides.map((slide) => (
             <div key={slide.id}>
-              <div className="relative w-full h-[550px] rounded-lg">
+              <div className="relative w-full h-[600px] sm:h-[600px] md:h-[600px] lg:h-[600px] bg-gray-100">
                 <img
                   src={slide.image}
                   alt={slide.alt}
                   className="w-full h-full object-cover object-center"
                 />
-                <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded">
-                  <h2 className="text-xl font-bold">{slide.caption}</h2>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                <div className="absolute bottom-8 left-8 right-8 flex flex-col items-start text-white animate-fade-in">
+                  <h2 className="text-[36px] font-bold mb-4">
+                    {slide.caption}
+                  </h2>
                   <Link
                     to={slide.link}
-                    className="text-blue-300 hover:text-blue-100"
+                    className="px-6 py-3 bg-blue-500 text-white text-[18px] font-medium rounded-lg hover:bg-blue-600 transition-all duration-300"
                   >
                     View Details
                   </Link>
