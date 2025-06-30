@@ -1,4 +1,5 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
@@ -13,7 +14,14 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/packages" element={<PackageList />} />
+          <Route
+            path="/packages"
+            element={
+              <ErrorBoundary>
+                <PackageList />
+              </ErrorBoundary>
+            }
+          />
           <Route path="/packages/:id" element={<PackageDetails />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
@@ -25,4 +33,5 @@ function App() {
     </Router>
   );
 }
+
 export default App;
