@@ -188,23 +188,25 @@ const PackageList = () => {
             key={pkg.id}
             className="border rounded-lg p-6 flex flex-col md:flex-row gap-6 bg-white shadow-md"
           >
-            <div className="md:w-1/4 w-full">
+            <div className="md:w-1/4 w-full flex flex-col">
               {pkg.images && pkg.images.length > 0 ? (
                 pkg.images.length === 1 ? (
-                  <img
-                    src={pkg.images[0].image}
-                    alt={pkg.images[0].alt_text || pkg.title}
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
+                  <div className="relative flex-1">
+                    <img
+                      src={pkg.images[0].image}
+                      alt={pkg.images[0].alt_text || pkg.title}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
                 ) : (
-                  <div className="relative">
+                  <div className="relative flex-1">
                     <Slider {...sliderSettings}>
                       {pkg.images.map((img) => (
                         <div key={img.id}>
                           <img
                             src={img.image}
                             alt={img.alt_text || pkg.title}
-                            className="w-full h-48 object-cover rounded-lg"
+                            className="w-full h-full object-cover rounded-lg"
                           />
                         </div>
                       ))}
@@ -212,7 +214,7 @@ const PackageList = () => {
                   </div>
                 )
               ) : (
-                <p className="text-[24px] font-medium text-gray-500">
+                <p className="text-[24px] font-medium text-gray-500 flex-1">
                   No images available.
                 </p>
               )}
