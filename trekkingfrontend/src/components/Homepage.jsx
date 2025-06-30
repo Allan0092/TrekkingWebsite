@@ -18,24 +18,24 @@ const Homepage = () => {
   const slides = [
     {
       id: 1,
-      image: "/images/annapurna.JPG",
+      image: "/images/5.jpeg",
       alt: "Annapurna Base Camp",
       caption: "Explore Annapurna Base Camp",
       link: "/packages/1",
     },
     {
       id: 2,
-      image: "/images/everest.png",
+      image: "/images/8.JPG",
       alt: "Everest Base Camp",
       caption: "Discover Everest Base Camp",
       link: "/packages/2",
     },
     {
       id: 3,
-      image: "/images/manaslu.JPG",
-      alt: "Manaslu Circuit",
-      caption: "Trek the Manaslu Circuit",
-      link: "/packages/3",
+      image: "/images/9.jpeg",
+      alt: "rhino",
+      caption: "Chitwan Pokhara Tour",
+      link: "/packages/6",
     },
   ];
 
@@ -129,11 +129,11 @@ const Homepage = () => {
         <Slider {...sliderSettings}>
           {slides.map((slide) => (
             <div key={slide.id}>
-              <div className="relative h-[400px]">
+              <div className="relative w-full h-[550px] rounded-lg">
                 <img
                   src={slide.image}
                   alt={slide.alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded">
                   <h2 className="text-xl font-bold">{slide.caption}</h2>
