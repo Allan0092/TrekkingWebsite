@@ -10,25 +10,27 @@ import SignUp from "./components/SignUp";
 function App() {
   return (
     <Router>
-      <div>
+      <div className="flex flex-col min-h-screen">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route
-            path="/packages"
-            element={
-              <ErrorBoundary>
-                <PackageList />
-              </ErrorBoundary>
-            }
-          />
-          <Route path="/packages/:id" element={<PackageDetails />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<div>About Us</div>} />
-          <Route path="/contact" element={<div>Contact Us</div>} />
-          <Route path="/search" element={<div>Search</div>} />
-        </Routes>
+        <main className="flex-grow pt-[80px]">
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route
+              path="/packages"
+              element={
+                <ErrorBoundary>
+                  <PackageList />
+                </ErrorBoundary>
+              }
+            />
+            <Route path="/packages/:id" element={<PackageDetails />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/about" element={<div>About Us</div>} />
+            <Route path="/contact" element={<div>Contact Us</div>} />
+            <Route path="/search" element={<div>Search</div>} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );
