@@ -1,5 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import About from "./components/About";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Footer from "./components/Footer";
 import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
@@ -12,25 +14,21 @@ function App() {
     <Router>
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow pt-[80px]">
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route
-              path="/packages"
-              element={
-                <ErrorBoundary>
-                  <PackageList />
-                </ErrorBoundary>
-              }
-            />
-            <Route path="/packages/:id" element={<PackageDetails />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/about" element={<div>About Us</div>} />
-            <Route path="/contact" element={<div>Contact Us</div>} />
-            <Route path="/search" element={<div>Search</div>} />
-          </Routes>
-        </main>
+        <div className="flex-grow pt-[80px]">
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Homepage />} />
+              <Route path="/packages" element={<PackageList />} />
+              <Route path="/packages/:id" element={<PackageDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<div>Contact Us</div>} />
+              <Route path="/search" element={<div>Search</div>} />
+            </Routes>
+          </ErrorBoundary>
+        </div>
+        <Footer />
       </div>
     </Router>
   );

@@ -1,5 +1,7 @@
-Trekking Website
-Overview
+### Trekking Website
+
+# Overview
+
 The Trekking Website is a React-based web application designed to promote trekking packages in Nepal. It features a user-friendly interface with a fixed navigation bar, a hero slider showcasing popular destinations, and sections for featured packages, FAQs, and newsletter subscription. The site integrates with a backend API to fetch package data and supports responsive design using Tailwind CSS. The project aims to provide a professional and engaging experience for users seeking trekking adventures.
 Features
 
@@ -21,7 +23,7 @@ Tailwind CSS for styling
 Inter font for typography
 
 Backend:
-Django (assumed, based on API endpoint http://localhost:8000/api/packages/)
+Django
 
 Dependencies:
 react-router-dom
@@ -64,7 +66,7 @@ Install Frontend Dependencies:
 cd trekkingfrontend
 npm install
 
-Install Backend Dependencies (assumed Django):
+Install Backend Dependencies
 cd backend
 python -m venv venv
 source venv/bin/activate # On Windows: venv\Scripts\activate
