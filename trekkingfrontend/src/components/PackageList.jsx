@@ -1,4 +1,14 @@
-import { BookmarkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowsUpDownIcon,
+  BookmarkIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
+  ExclamationCircleIcon,
+  FunnelIcon,
+  MapPinIcon,
+  SparklesIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
@@ -11,6 +21,11 @@ const PackageList = () => {
   const [sortBy, setSortBy] = useState("latest");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [region, setRegion] = useState("All Regions");
+  const [difficulty, setDifficulty] = useState("All Levels");
+  const [duration, setDuration] = useState(100);
+  const [priceRange, setPriceRange] = useState(10000);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -37,7 +52,6 @@ const PackageList = () => {
       return [];
     }
     const sortedPackages = [...packagesToSort];
-    console.log("Sorting with:", sortBy, sortedPackages);
     switch (sortBy) {
       case "latest":
         return sortedPackages.sort(
@@ -84,13 +98,48 @@ const PackageList = () => {
     }
   };
 
-  const filteredPackages = packages.filter((pkg) =>
-    pkg.title && typeof pkg.title === "string"
-      ? pkg.title.toLowerCase().includes(search.toLowerCase())
-      : false
-  );
+  const filterPackages = () => {
+    return packages.filter((pkg) => {
+      const matchesSearch =
+        pkg.title && typeof pkg.title === "string"
+          ? pkg.title.toLowerCase().includes(search.toLowerCase())
+          : false;
+      const matchesRegion =
+        region === "All Regions" || (pkg.region && pkg.region === region);
+      const matchesDifficulty =
+        difficulty === "All Levels" ||
+        (pkg.difficulty &&
+          pkg.difficulty.toLowerCase() === difficulty.toLowerCase());
+      const matchesDuration = Number(pkg.duration) <= duration;
+      const matchesPrice = Number(pkg.price) <= priceRange;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesDifficulty &&
+        matchesDuration &&
+        matchesPrice
+      );
+    });
+  };
 
-  const displayPackages = sortPackages(filteredPackages);
+  const displayPackages = sortPackages(filterPackages());
+
+  const isFilterApplied = () => {
+    return (
+      region !== "All Regions" ||
+      difficulty !== "All Levels" ||
+      duration < 100 ||
+      priceRange < 10000
+    );
+  };
+
+  const clearFilters = () => {
+    setRegion("All Regions");
+    setDifficulty("All Levels");
+    setDuration(100);
+    setPriceRange(10000);
+    setSearch("");
+  };
 
   const sliderSettings = {
     dots: true,
@@ -145,30 +194,133 @@ const PackageList = () => {
   return (
     <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <h1 className="text-[64px] font-bold">Trekking Packages</h1>
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <input
-            type="text"
-            placeholder="Search packages..."
-            className="p-3 text-[24px] font-medium border rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <select
-            className="p-3 text-[24px] font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+        <h1 className="text-5xl font-bold mb-4 sm:mb-0">Trekking Packages</h1>
+        <div className="flex flex-col sm:flex-row gap-12 items-center">
+          <div className="flex flex-col w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search packages..."
+              className="p-3 text-l font-medium border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-row w-full sm:w-64">
+            <label className="text-m font-medium mb-1 flex items-center">
+              <ArrowsUpDownIcon className="h-5 w-5 mr-2" />
+              Sort By
+            </label>
+            <select
+              className="p-3 text-l font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="latest">Latest</option>
+              <option value="price-high">Price (High to Low)</option>
+              <option value="price-low">Price (Low to High)</option>
+              <option value="duration-short">Duration (Short to Long)</option>
+              <option value="duration-long">Duration (Long to Short)</option>
+              <option value="difficulty-easy">Difficulty (Easy to Hard)</option>
+              <option value="difficulty-hard">Difficulty (Hard to Easy)</option>
+            </select>
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="p-3 bg-blue-500 text-white text-[18px] font-medium rounded-lg hover:bg-blue-600 flex items-center"
           >
-            <option value="latest">Latest</option>
-            <option value="price-high">Price (High to Low)</option>
-            <option value="price-low">Price (Low to High)</option>
-            <option value="duration-short">Duration (Short to Long)</option>
-            <option value="duration-long">Duration (Long to Short)</option>
-            <option value="difficulty-easy">Difficulty (Easy to Hard)</option>
-            <option value="difficulty-hard">Difficulty (Hard to Easy)</option>
-          </select>
+            <FunnelIcon className="h-5 w-5 mr-2" />
+            Filter
+          </button>
         </div>
       </div>
+
+      {/* Filter Section */}
+      {showFilters && (
+        <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-col">
+              <label className="text-[18px] font-medium mb-1 flex items-center">
+                <MapPinIcon className="h-5 w-5 mr-2" />
+                Region
+              </label>
+              <select
+                className="p-3 text-[16px] font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+              >
+                <option value="All Regions">All Regions</option>
+                <option value="Everest">Everest</option>
+                <option value="Annapurna">Annapurna</option>
+                <option value="Langtang">Langtang</option>
+                <option value="Manaslu">Manaslu</option>
+                <option value="Mustang">Mustang</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[18px] font-medium mb-1 flex items-center">
+                <SparklesIcon className="h-5 w-5 mr-2" />
+                Difficulty
+              </label>
+              <select
+                className="p-3 text-[16px] font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+              >
+                <option value="All Levels">All Levels</option>
+                <option value="EASY">Easy</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="TOUGH">Tough</option>
+                <option value="VERY_TOUGH">Very Tough</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[18px] font-medium mb-1 flex items-center">
+                <CalendarIcon className="h-5 w-5 mr-2" />
+                Duration (days)
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="100"
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                className="w-full"
+              />
+              <p className="text-[16px] font-medium mt-2">
+                Up to {duration} days
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[18px] font-medium mb-1 flex items-center">
+                <CurrencyDollarIcon className="h-5 w-5 mr-2" />
+                Price Range
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="10000"
+                step="100"
+                value={priceRange}
+                onChange={(e) => setPriceRange(Number(e.target.value))}
+                className="w-full"
+              />
+              <p className="text-[16px] font-medium mt-2">
+                Up to ${priceRange}
+              </p>
+            </div>
+          </div>
+          {isFilterApplied() && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 p-2 bg-gray-200 text-black text-[16px] font-medium rounded-lg hover:bg-gray-300 flex items-center"
+            >
+              <XMarkIcon className="h-5 w-5 mr-2" />
+              Clear Filters
+            </button>
+          )}
+        </div>
+      )}
+
       {error && (
         <p className="text-[24px] font-medium text-red-500 mb-4">{error}</p>
       )}
@@ -178,8 +330,16 @@ const PackageList = () => {
         </div>
       )}
       {!isLoading && displayPackages.length === 0 && (
-        <div className="text-[24px] font-medium text-center py-4">
-          No packages found.
+        <div className="text-[24px] font-medium text-center py-4 flex flex-col items-center">
+          <ExclamationCircleIcon className="h-12 w-12 text-gray-500 mb-2" />
+          No matching packages found.
+          <button
+            onClick={clearFilters}
+            className="mt-4 p-2 bg-blue-500 text-white text-[18px] font-medium rounded-lg hover:bg-blue-600 flex items-center"
+          >
+            <XMarkIcon className="h-5 w-5 mr-2" />
+            Clear All Filters
+          </button>
         </div>
       )}
       <div className="space-y-6">
