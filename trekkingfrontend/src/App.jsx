@@ -14,7 +14,7 @@ function App() {
     <Router>
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <div className="flex-grow pt-[80px] bg-amber-700">
+        <div className="flex-grow pt-[80px] ">
           <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Homepage />} />
