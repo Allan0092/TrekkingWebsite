@@ -187,7 +187,7 @@ const Navbar = () => {
                     className={`font-medium transition-colors duration-300 ${
                       isScrolled
                         ? "text-neutral-700 hover:text-primary-600"
-                        : "text-neutral-900 hover:text-white"
+                        : "text-neutral-900 hover:text-primary-800"
                     }`}
                   >
                     Sign In

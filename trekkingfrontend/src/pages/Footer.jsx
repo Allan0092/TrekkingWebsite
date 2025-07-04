@@ -3,7 +3,6 @@ import {
   Instagram,
   Mail,
   MapPin,
-  Mountain,
   Phone,
   Twitter,
 } from "lucide-react";
@@ -18,7 +17,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
-              <Mountain className="w-8 h-8 text-primary-400" />
+              <img src="/logo.png" className="h-8 w-8" />
               <span className="font-display font-bold text-xl">
                 Himalaya Adventure
               </span>
