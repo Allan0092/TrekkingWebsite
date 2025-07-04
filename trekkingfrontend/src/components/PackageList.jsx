@@ -192,7 +192,7 @@ const PackageList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
+    <div className="mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <h1 className="text-5xl font-bold mb-4 sm:mb-0">Trekking Packages</h1>
         <div className="flex flex-col sm:flex-row gap-12 items-center">
@@ -226,7 +226,7 @@ const PackageList = () => {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-3 bg-blue-500 text-white text-[18px] font-medium rounded-lg hover:bg-blue-600 flex items-center"
+            className="px-4 py-3 text-[18px] font-medium border rounded-lg border-neutral-300  text-neutral-700 hover:bg-neutral-50 flex items-center"
           >
             <FunnelIcon className="h-5 w-5 mr-2" />
             Filter
