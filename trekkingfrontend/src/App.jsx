@@ -1,15 +1,15 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import About from "./components/About";
+import ContactUs from "./components/ContactUs";
+import ErrorBoundary from "./components/ErrorBoundary";
+import Footer from "./components/Footer";
+import Homepage from "./components/Homepage";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
+import PackageDetails from "./components/PackageDetails";
+import PackageList from "./components/PackageList";
 import ScrollToTop from "./components/ScrollToTop";
-import About from "./pages/About";
-import ContactUs from "./pages/ContactUs";
-import ErrorBoundary from "./pages/ErrorBoundary";
-import Footer from "./pages/Footer";
-import Homepage from "./pages/Homepage";
-import Login from "./pages/Login";
-import Navbar from "./pages/Navbar";
-import PackageDetails from "./pages/PackageDetails";
-import PackageList from "./pages/PackageList";
-import SignUp from "./pages/SignUp";
+import SignUp from "./components/SignUp";
 
 function App() {
   return (
