@@ -157,7 +157,7 @@ const Homepage = () => {
       {/* Featured Packages Section */}
       <div className="container mx-auto p-4">
         <h1 className="text-[64px] font-bold mb-4">
-          Welcome to Trekking Website Treks
+          Welcome to Himalaya Adventure
         </h1>
         <div className="flex items-center mb-4">
           <img
