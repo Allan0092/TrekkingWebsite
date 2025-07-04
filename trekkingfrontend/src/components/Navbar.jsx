@@ -35,8 +35,8 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-neutral-200/50"
-          : "bg-amber-700"
+          ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-neutral-200/50 opacity-90"
+          : "bg-white/90"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,7 +54,7 @@ const Navbar = () => {
               </div>
               <span
                 className={`font-display font-bold text-xl lg:text-2xl transition-colors duration-300 ${
-                  isScrolled ? "text-neutral-900" : "text-white"
+                  isScrolled ? "text-neutral-900" : "text-neutral-800"
                 }`}
               >
                 Himalaya Adventure
@@ -77,10 +77,10 @@ const Navbar = () => {
                     isActive(item.href)
                       ? isScrolled
                         ? "text-primary-600 bg-primary-50"
-                        : "text-accent-400 bg-white/10"
+                        : "text-accent-700 bg-white/10"
                       : isScrolled
                       ? "text-neutral-700 hover:text-primary-600 hover:bg-neutral-50"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
+                      : "text-neutral-950 hover:text-primary-900 hover:bg-white/10"
                   }`}
                 >
                   {item.name}
@@ -103,7 +103,7 @@ const Navbar = () => {
               className={`p-2 rounded-full transition-colors duration-300 ${
                 isScrolled
                   ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
-                  : "text-white/90 hover:text-white hover:bg-white/10"
+                  : "text-neutral-900 hover:text-primary-600 hover:bg-white/10"
               }`}
             >
               <Search className="w-5 h-5" />
@@ -187,7 +187,7 @@ const Navbar = () => {
                     className={`font-medium transition-colors duration-300 ${
                       isScrolled
                         ? "text-neutral-700 hover:text-primary-600"
-                        : "text-white/90 hover:text-white"
+                        : "text-neutral-900 hover:text-white"
                     }`}
                   >
                     Sign In
