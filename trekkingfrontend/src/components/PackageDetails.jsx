@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PackageImageUpload from "../pages/PackageImageUpload";
+import PackageImageUpload from "../components/PackageImageUpload";
 
 const PackageDetails = () => {
   const { id } = useParams();
