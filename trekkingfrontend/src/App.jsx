@@ -8,8 +8,8 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import PackageDetails from "./components/PackageDetails";
 import PackageList from "./components/PackageList";
-import ScrollToTop from "./components/ScrollToTop";
 import SignUp from "./components/SignUp";
+import ScrollToTop from "./utils/ScrollToTop";
 
 function App() {
   return (
