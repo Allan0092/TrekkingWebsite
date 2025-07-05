@@ -45,22 +45,6 @@ The frontend communicates with a backend restful APIs to fetch trekking package 
 
 - GET /api/packages/
   Description: Retrieves a list of trekking packages.
-  Response:[
-  {
-  "id": 1,
-  "title": "Annapurna Base Camp Trek",
-  "duration": 14,
-  "price": 1450,
-  "difficulty": "MODERATE",
-  "images": [
-  {
-  "image": "path/to/image.jpg",
-  "alt_text": "Annapurna Base Camp"
-  }
-  ]
-  },
-  ...
-  ]
 
 ## Usage: Fetched in Homepage.jsx and PackageList.jsx to display package cards.
 
