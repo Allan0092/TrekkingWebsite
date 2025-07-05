@@ -54,18 +54,20 @@ The frontend communicates with a backend restful APIs to fetch trekking package 
 
 ## Clone the Repository:
 
-`git clone <repository-url>`
-`cd trekking-website`
+`git clone https://github.com/Allan0092/TrekkingWebsite.git`
+`cd trekkingwebsite`
 
 - Install Frontend Dependencies:
+
   `cd trekkingfrontend`
   `npm install`
 
 - Install Backend Dependencies
-  `cd backend`
-  `python -m venv venv`
-  `source venv/bin/activate # On Windows: venv\Scripts\activate`
-  `pip install -r requirements.txt`
+
+`cd backend`
+`python -m venv venv`
+`source venv/bin/activate # On Windows: venv\Scripts\activate`
+`pip install -r requirements.txt`
 
 ## Set Up Assets:
 

@@ -138,7 +138,7 @@ const PackageDetails = () => {
 
   if (error || !pkg) {
     return (
-      <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter text-[24px] font-medium text-center py-4 text-red-500">
+      <div className="container mx-auto p-4 bg-[#F6FFFF] font-inter text-[24px] font-medium text-center py-4 text-red-500">
         {error || "Package not found."}
       </div>
     );
