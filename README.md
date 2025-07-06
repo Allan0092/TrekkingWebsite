@@ -54,13 +54,17 @@ The frontend communicates with a backend restful APIs to fetch trekking package 
 
 ## Clone the Repository:
 
-`git clone https://github.com/Allan0092/TrekkingWebsite.git`
-`cd trekkingwebsite`
+```
+git clone https://github.com/Allan0092/TrekkingWebsite.git
+cd trekkingwebsite
+```
 
 - Install Frontend Dependencies:
 
-  `cd trekkingfrontend`
-  `npm install`
+```
+cd trekkingfrontend
+npm install
+```
 
 - Install Backend Dependencies
 
