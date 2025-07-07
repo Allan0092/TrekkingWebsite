@@ -281,7 +281,7 @@ const PackageDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter text-[24px] font-medium text-center py-4">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-[#F6FFFF] font-inter text-[24px] font-medium text-center text-red-500">
         Loading package details...
       </div>
     );
@@ -289,16 +289,16 @@ const PackageDetails = () => {
 
   if (error || !pkg) {
     return (
-      <div className="container mx-auto p-4 bg-[#F6FFFF]  font-inter text-[24px] font-medium text-center py-4 text-red-500">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-[#F6FFFF] font-inter text-[24px] font-medium text-center text-red-500">
         {error || "Package not found."}
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-[#F6FFFF] text-black font-inter">
       {/* Image Slider */}
-      <div className="mb-6 w-full">
+      <div className="mb-8 w-full">
         {pkg.images && pkg.images.length > 0 ? (
           <>
             <Slider {...sliderSettings} ref={sliderRef}>
@@ -307,19 +307,21 @@ const PackageDetails = () => {
                   <img
                     src={img.image}
                     alt={img.alt_text || pkg.title}
-                    className="w-full h-[400px] object-cover rounded-lg border border-gray-200"
+                    className="w-full h-[80vh] object-cover rounded-xl shadow-md"
+                    aria-label={`Image of ${img.alt_text || pkg.title}`}
                   />
                 </div>
               ))}
             </Slider>
-            <div className="flex gap-2 mt-4 justify-center">
+            <div className="flex gap-4 mt-4 justify-center">
               {pkg.images.map((img, index) => (
                 <img
                   key={img.id}
                   src={img.image}
                   alt={`Thumbnail ${img.alt_text || pkg.title}`}
-                  className="w-16 h-16 object-cover rounded-md cursor-pointer hover:opacity-80 border border-gray-200 hover:border-blue-500 transition-all duration-200"
+                  className="w-20 h-20 object-cover rounded-md cursor-pointer hover:opacity-80 border border-gray-200 hover:border-blue-500 transition-all duration-200"
                   onClick={() => sliderRef.current.slickGoTo(index)}
+                  aria-label={`Select thumbnail ${index + 1}`}
                 />
               ))}
             </div>
@@ -332,24 +334,24 @@ const PackageDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
         {/* Left Section */}
         <div className="lg:w-2/3">
           {/* Title */}
-          <h1 className="text-[48px] font-bold mb-6 bg-gradient-to-r from-blue-600 to-teal-500 text-transparent bg-clip-text">
+          <h1 className="text-[48px] sm:text-[56px] font-bold mb-8 bg-gradient-to-r from-blue-700 to-teal-600 text-transparent bg-clip-text [text-shadow:_0_2px_4px_rgba(0,0,0,0.1)] animate-fade-in">
             {pkg.title || "Unnamed Package"}
           </h1>
 
           {/* Summary Box */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="flex items-center">
                 <img
                   src="/icons/calendar.png"
                   alt="Calendar"
-                  className="h-6 w-6 mr-2"
+                  className="h-8 w-8 mr-3"
                 />
-                <p className="text-[24px] font-medium">
+                <p className="text-[24px] font-medium text-gray-800">
                   {pkg.duration || "N/A"} days
                 </p>
               </div>
@@ -357,17 +359,19 @@ const PackageDetails = () => {
                 <img
                   src="/icons/dollar.png"
                   alt="Price"
-                  className="h-6 w-6 mr-2"
+                  className="h-8 w-8 mr-3"
                 />
-                <p className="text-[24px] font-medium">${pkg.price || "N/A"}</p>
+                <p className="text-[24px] font-medium text-gray-800">
+                  ${pkg.price || "N/A"}
+                </p>
               </div>
               <div className="flex items-center">
                 <img
                   src="/icons/mountain_peak.png"
                   alt="Altitude"
-                  className="h-6 w-6 mr-2"
+                  className="h-8 w-8 mr-3"
                 />
-                <p className="text-[24px] font-medium">
+                <p className="text-[24px] font-medium text-gray-800">
                   {pkg.altitude || "N/A"}m
                 </p>
               </div>
@@ -375,7 +379,7 @@ const PackageDetails = () => {
                 <img
                   src="/icons/difficulty.png"
                   alt="Difficulty"
-                  className="h-6 w-6 mr-2"
+                  className="h-8 w-8 mr-3"
                 />
                 <p
                   className={`text-[24px] font-medium ${getDifficultyColor(
@@ -392,25 +396,31 @@ const PackageDetails = () => {
           <div
             id="overview"
             ref={sectionRefs.current.overview}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-white rounded-xl p-8 shadow-lg mb-8 border-l-4 border-teal-500 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Overview</h2>
-            <p className="text-[24px] font-medium text-gray-700">
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
+              Overview
+            </h2>
+            <p className="text-[24px] font-normal text-gray-700">
               {pkg.description || "No description available."}
             </p>
           </div>
+
           <div
             id="itinerary"
             ref={sectionRefs.current.itinerary}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-teal-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Itinerary</h2>
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
+              Itinerary
+            </h2>
             <div className="space-y-4">
               {itineraries.map((item) => (
                 <div
                   key={item.day}
-                  className="bg-white rounded-2xl p-4 shadow-lg transition-all duration-300 border border-gray-100 hover:shadow-xl"
+                  className="bg-white rounded-xl p-4 shadow-md transition-all duration-300 border border-gray-100 hover:bg-teal-100 hover:shadow-xl"
                   onClick={() => toggleDay(item.day)}
+                  aria-label={`Expand Day ${item.day} itinerary`}
                 >
                   <div className="flex items-center justify-between cursor-pointer">
                     <div className="flex items-center">
@@ -419,7 +429,7 @@ const PackageDetails = () => {
                         alt={item.icon}
                         className="h-6 w-6 mr-2"
                       />
-                      <h3 className="text-[24px] font-medium">{`Day ${item.day}: ${item.title}`}</h3>
+                      <h3 className="text-[24px] font-medium text-gray-800">{`Day ${item.day}: ${item.title}`}</h3>
                     </div>
                     {expandedDays[item.day] ? (
                       <ChevronUpIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
@@ -428,7 +438,7 @@ const PackageDetails = () => {
                     )}
                   </div>
                   {expandedDays[item.day] && (
-                    <div className="mt-4 text-[18px] font-medium text-gray-700 transition-all duration-300">
+                    <div className="mt-4 text-[18px] font-normal text-gray-700 transition-all duration-300">
                       {item.description}
                     </div>
                   )}
@@ -436,54 +446,58 @@ const PackageDetails = () => {
               ))}
             </div>
           </div>
+
           <div
             id="map"
             ref={sectionRefs.current.map}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-white rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Map</h2>
-            <div className="relative">
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">Map</h2>
+            <div className="relative overflow-hidden rounded-xl">
               <img
-                src="/images/trek-map-placeholder.jpg"
+                src="/icons/map-placeholder.png"
                 alt="Trekking Route Map"
-                className="w-full h-[300px] object-cover rounded-lg border border-gray-200"
+                className="w-full min-h-[400px] object-contain rounded-xl border border-gray-200 hover:scale-[1.02] transition-transform duration-300"
+                aria-label="Trekking route map"
               />
-              <div className="absolute top-0 left-0 bg-blue-500 text-white text-[16px] font-medium px-4 py-2 rounded-tl-lg rounded-br-lg">
+              <div className="absolute top-4 left-4 bg-blue-600 text-white text-[16px] font-medium px-4 py-2 rounded-full shadow-md">
                 Trekking Route
               </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/30 rounded-xl" />
             </div>
-            <p className="text-[18px] font-medium text-gray-700 mt-4">
-              This is a topographic representation of the trekking route,
-              showcasing key landmarks and elevation changes. A detailed
-              interactive map is provided upon booking confirmation.
-            </p>
           </div>
+
           <div
             id="packing"
             ref={sectionRefs.current.packing}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-gray-50 rounded-xl p-8 shadow-lg mb-8 border-l-4 border-blue-500 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Packing List</h2>
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
+              Packing List
+            </h2>
             <div className="space-y-4">
               {packingList.map((item) => (
                 <div
                   key={item.category}
-                  className={`rounded-2xl p-4 shadow-lg transition-all duration-300 border border-gray-100 hover:shadow-xl ${
+                  className={`rounded-xl p-4 shadow-md transition-all duration-300 border border-gray-100 hover:shadow-xl ${
                     checkedItems[item.category] ? "bg-gray-400" : "bg-white"
                   }`}
                   onClick={() => togglePacking(item.category)}
+                  aria-label={`Expand ${item.category} packing list`}
                 >
                   <div className="flex items-center justify-between cursor-pointer">
                     <div className="flex items-center gap-3">
                       {checkedItems[item.category] ? (
                         <Square2StackSolidIcon
-                          className="h-6 w-6 text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                          className="h-6 w-6 text-blue-500 hover:text-blue-600 transition-colors duration-200 animate-pulse"
                           onClick={(e) => toggleCheckbox(item.category, e)}
+                          aria-label={`Uncheck ${item.category}`}
                         />
                       ) : (
                         <Square2StackOutlineIcon
                           className="h-6 w-6 text-gray-500 hover:text-blue-600 transition-colors duration-200"
                           onClick={(e) => toggleCheckbox(item.category, e)}
+                          aria-label={`Check ${item.category}`}
                         />
                       )}
                       <img
@@ -491,7 +505,7 @@ const PackageDetails = () => {
                         alt={item.category}
                         className="h-6 w-6"
                       />
-                      <h3 className="text-[24px] font-medium">
+                      <h3 className="text-[24px] font-medium text-gray-800">
                         {item.category}
                       </h3>
                     </div>
@@ -502,7 +516,7 @@ const PackageDetails = () => {
                     )}
                   </div>
                   {expandedPacking[item.category] && (
-                    <ul className="mt-4 text-[18px] font-medium text-gray-700 list-disc pl-6 transition-all duration-300">
+                    <ul className="mt-4 text-[18px] font-normal text-gray-700 list-disc pl-6 transition-all duration-300">
                       {item.items.map((subItem, index) => (
                         <li key={index}>{subItem}</li>
                       ))}
@@ -512,12 +526,15 @@ const PackageDetails = () => {
               ))}
             </div>
           </div>
+
           <div
             id="includes"
             ref={sectionRefs.current.includes}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-green-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Price Includes</h2>
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
+              Price Includes
+            </h2>
             <ul className="space-y-2">
               {[
                 "Accommodation in standard hotels and teahouses during the trek",
@@ -531,20 +548,23 @@ const PackageDetails = () => {
               ].map((item, index) => (
                 <li
                   key={index}
-                  className="flex items-start text-[18px] font-medium text-gray-700 hover:text-blue-500 transition-colors duration-200"
+                  className="flex items-start text-[18px] font-normal text-gray-700 hover:text-blue-500 transition-colors duration-200"
                 >
-                  <CheckCircleIcon className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-1" />
+                  <CheckCircleIcon className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-1 hover:scale-110 transition-transform duration-200" />
                   {item}
                 </li>
               ))}
             </ul>
           </div>
+
           <div
             id="excludes"
             ref={sectionRefs.current.excludes}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
+            className="bg-red-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
           >
-            <h2 className="text-[32px] font-bold mb-4">Price Excludes</h2>
+            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
+              Price Excludes
+            </h2>
             <ul className="space-y-2">
               {[
                 "Lunch and dinner in Kathmandu",
@@ -557,9 +577,9 @@ const PackageDetails = () => {
               ].map((item, index) => (
                 <li
                   key={index}
-                  className="flex items-start text-[18px] font-medium text-gray-700 hover:text-red-500 transition-colors duration-200"
+                  className="flex items-start text-[18px] font-normal text-gray-700 hover:text-red-500 transition-colors duration-200"
                 >
-                  <XCircleIcon className="h-5 w-5 mr-2 text-red-500 flex-shrink-0 mt-1" />
+                  <XCircleIcon className="h-5 w-5 mr-2 text-red-500 flex-shrink-0 mt-1 hover:scale-110 transition-transform duration-200" />
                   {item}
                 </li>
               ))}
@@ -571,27 +591,31 @@ const PackageDetails = () => {
         <div className="lg:w-1/3">
           <div className="sticky top-[80px]">
             {/* Price and Buttons */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100">
+            <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl p-8 shadow-lg mb-6 border border-gray-100 animate-fade-in">
               <div className="flex items-center mb-4">
                 <CurrencyDollarIcon className="h-6 w-6 mr-2 text-blue-500" />
-                <p className="text-[32px] font-bold">${pkg.price || "N/A"}</p>
+                <p className="text-[32px] font-bold text-gray-800">
+                  ${pkg.price || "N/A"}
+                </p>
               </div>
               <Link
                 to="/booking"
                 className="block p-3 bg-blue-500 text-white text-[24px] font-medium rounded-lg hover:bg-blue-600 mb-4 text-center transition-all duration-200"
+                aria-label="Book this package"
               >
                 Book Now
               </Link>
               <Link
                 to="/contact"
                 className="block p-3 bg-gray-200 text-black text-[24px] font-medium rounded-lg hover:bg-gray-300 text-center transition-all duration-200"
+                aria-label="Inquire about this package"
               >
                 Inquire Now
               </Link>
             </div>
 
             {/* Navigation */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+            <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl p-8 shadow-lg border border-gray-100 animate-fade-in">
               <nav className="space-y-2">
                 {[
                   { id: "overview", title: "Overview", icon: DocumentTextIcon },
@@ -611,7 +635,7 @@ const PackageDetails = () => {
                 ].map((section, index, arr) => (
                   <div
                     key={section.id}
-                    className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-gray-100 transition-all duration-200 ${
+                    className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-blue-200 transition-all duration-200 ${
                       activeSection === section.id
                         ? "bg-blue-100 text-blue-600"
                         : ""
@@ -619,9 +643,10 @@ const PackageDetails = () => {
                       index < arr.length - 1 ? "border-b border-gray-200" : ""
                     }`}
                     onClick={() => scrollToSection(section.id)}
+                    aria-label={`Navigate to ${section.title}`}
                   >
                     <section.icon className="h-5 w-5 mr-2" />
-                    <span className="text-[18px] font-medium">
+                    <span className="text-[18px] font-medium text-gray-800">
                       {section.title}
                     </span>
                   </div>
