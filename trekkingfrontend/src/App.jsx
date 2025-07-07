@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import About from "./components/About";
+import Booking from "./components/Booking";
 import ContactUs from "./components/ContactUs";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
@@ -27,7 +28,7 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<ContactUs />} />
-              <Route path="/search" element={<div>Search</div>} />
+              <Route path="/booking" element={<Booking />} />
             </Routes>
           </ErrorBoundary>
         </div>
