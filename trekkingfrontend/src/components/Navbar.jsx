@@ -198,7 +198,7 @@ const Navbar = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link
-                    to="/register"
+                    to="/signup"
                     className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2 rounded-full hover:from-primary-700 hover:to-primary-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                   >
                     Sign Up
