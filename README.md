@@ -20,7 +20,7 @@ The Trekking Website is a React-based web application designed to promote trekki
 
 ### Frontend:
 
-- React (react-router-dom for routing, react-slick for the slider, @heroicons/react for icons)
+- React + Vite
 - Tailwind CSS for styling
 - Inter font for typography
 

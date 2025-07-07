@@ -30,6 +30,7 @@ const PackageDetails = () => {
     includes: useRef(null),
     excludes: useRef(null),
   });
+  const sliderRef = useRef(null);
 
   useEffect(() => {
     const fetchPackage = async () => {
@@ -171,7 +172,7 @@ const PackageDetails = () => {
 
   if (error || !pkg) {
     return (
-      <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter text-[24px] font-medium text-center py-4 text-red-500">
+      <div className="container mx-auto p-4 bg-[#F6FFFF]  font-inter text-[24px] font-medium text-center py-4 text-red-500">
         {error || "Package not found."}
       </div>
     );
@@ -179,52 +180,51 @@ const PackageDetails = () => {
 
   return (
     <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
+      {/* Image Slider */}
+      <div className="mb-6 w-full">
+        {pkg.images && pkg.images.length > 0 ? (
+          <>
+            <Slider {...sliderSettings} ref={sliderRef}>
+              {pkg.images.map((img) => (
+                <div key={img.id}>
+                  <img
+                    src={img.image}
+                    alt={img.alt_text || pkg.title}
+                    className="w-full h-[400px] object-cover rounded-lg border border-gray-200"
+                  />
+                </div>
+              ))}
+            </Slider>
+            <div className="flex gap-2 mt-4 justify-center">
+              {pkg.images.map((img, index) => (
+                <img
+                  key={img.id}
+                  src={img.image}
+                  alt={`Thumbnail ${img.alt_text || pkg.title}`}
+                  className="w-16 h-16 object-cover rounded-md cursor-pointer hover:opacity-80 border border-gray-200 hover:border-blue-500 transition-all duration-200"
+                  onClick={() => sliderRef.current.slickGoTo(index)}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-[24px] font-medium text-gray-500 text-center">
+            No images available.
+          </p>
+        )}
+      </div>
+
+      {/* Main Content */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Section */}
         <div className="lg:w-2/3">
-          {/* Image Slider */}
-          <div className="mb-6">
-            {pkg.images && pkg.images.length > 0 ? (
-              <>
-                <Slider {...sliderSettings}>
-                  {pkg.images.map((img) => (
-                    <div key={img.id}>
-                      <img
-                        src={img.image}
-                        alt={img.alt_text || pkg.title}
-                        className="w-full h-[400px] object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
-                </Slider>
-                <div className="flex gap-2 mt-4 justify-center">
-                  {pkg.images.map((img, index) => (
-                    <img
-                      key={img.id}
-                      src={img.image}
-                      alt={`Thumbnail ${img.alt_text || pkg.title}`}
-                      className="w-16 h-16 object-cover rounded-md cursor-pointer hover:opacity-80"
-                      onClick={() =>
-                        document.querySelector(".slick-slider").slickGoTo(index)
-                      }
-                    />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-[24px] font-medium text-gray-500 text-center">
-                No images available.
-              </p>
-            )}
-          </div>
-
           {/* Title */}
-          <h1 className="text-[48px] font-bold mb-6">
+          <h1 className="text-[48px] font-bold mb-6 bg-gradient-to-r from-blue-600 to-teal-500 text-transparent bg-clip-text">
             {pkg.title || "Unnamed Package"}
           </h1>
 
           {/* Summary Box */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
+          <div className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center">
                 <img
@@ -275,24 +275,24 @@ const PackageDetails = () => {
           <div
             id="overview"
             ref={sectionRefs.current.overview}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Overview</h2>
-            <p className="text-[24px] font-medium">
+            <p className="text-[24px] font-medium text-gray-700">
               {pkg.description || "No description available."}
             </p>
           </div>
           <div
             id="itinerary"
             ref={sectionRefs.current.itinerary}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Itinerary</h2>
             <div className="space-y-4">
               {itineraries.map((item) => (
                 <div
                   key={item.day}
-                  className="bg-white rounded-2xl p-4 shadow-lg transition-all duration-300"
+                  className="bg-white rounded-2xl p-4 shadow-lg transition-all duration-300 border border-gray-100 hover:shadow-xl"
                   onClick={() => toggleDay(item.day)}
                 >
                   <div className="flex items-center justify-between cursor-pointer">
@@ -311,7 +311,7 @@ const PackageDetails = () => {
                     )}
                   </div>
                   {expandedDays[item.day] && (
-                    <div className="mt-4 text-[18px] font-medium text-gray-700">
+                    <div className="mt-4 text-[18px] font-medium text-gray-700 transition-all duration-300">
                       {item.description}
                     </div>
                   )}
@@ -322,42 +322,87 @@ const PackageDetails = () => {
           <div
             id="map"
             ref={sectionRefs.current.map}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Map</h2>
-            <p className="text-[24px] font-medium">
-              Map placeholder for the trekking route.
+            <div className="relative">
+              <img
+                src="/images/trek-map-placeholder.jpg"
+                alt="Trekking Route Map"
+                className="w-full h-[300px] object-cover rounded-lg border border-gray-200"
+              />
+              <div className="absolute top-0 left-0 bg-blue-500 text-white text-[16px] font-medium px-4 py-2 rounded-tl-lg rounded-br-lg">
+                Trekking Route
+              </div>
+            </div>
+            <p className="text-[18px] font-medium text-gray-700 mt-4">
+              This is a topographic representation of the trekking route,
+              showcasing key landmarks and elevation changes. A detailed
+              interactive map is provided upon booking confirmation.
             </p>
           </div>
           <div
             id="packing"
             ref={sectionRefs.current.packing}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Packing List</h2>
-            <p className="text-[24px] font-medium">
+            <p className="text-[24px] font-medium text-gray-700">
               Recommended packing list will be provided here.
             </p>
           </div>
           <div
             id="includes"
             ref={sectionRefs.current.includes}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Price Includes</h2>
-            <p className="text-[24px] font-medium">
-              List of included services will be provided here.
-            </p>
+            <ul className="space-y-2">
+              {[
+                "Accommodation in standard hotels and teahouses during the trek",
+                "All meals (breakfast, lunch, and dinner) during the trekking period",
+                "Experienced English-speaking trekking guide",
+                "Porter services (1 porter per 2 trekkers, max 15kg luggage per person)",
+                "All necessary trekking permits and entrance fees",
+                "Domestic flights to and from the trekking starting point",
+                "First aid kit and emergency oxygen supply",
+                "All ground transportation as per the itinerary",
+              ].map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-start text-[18px] font-medium text-gray-700 hover:text-blue-500 transition-colors duration-200"
+                >
+                  <CheckCircleIcon className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-1" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
           <div
             id="excludes"
             ref={sectionRefs.current.excludes}
-            className="bg-white rounded-2xl p-8 shadow-lg mb-6"
+            className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Price Excludes</h2>
-            <p className="text-[24px] font-medium">
-              List of excluded services will be provided here.
-            </p>
+            <ul className="space-y-2">
+              {[
+                "Lunch and dinner in Kathmandu",
+                "International flight fare and airport departure tax",
+                "Nepal Entry Visa (Visa can be acquired easily after your arrival at Tribhuvan International Airport in Kathmandu with a fee of USD 30 for 15 days visa, USD 50 for 30 days visa and USD 125 for 90 days visa)",
+                "Travel insurance along with high-altitude emergency evacuation coverage",
+                "Any beverages including bottled and boiled water",
+                "Tips to trekking staff and driver",
+                "Personal trekking gear and equipment",
+              ].map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-start text-[18px] font-medium text-gray-700 hover:text-red-500 transition-colors duration-200"
+                >
+                  <XCircleIcon className="h-5 w-5 mr-2 text-red-500 flex-shrink-0 mt-1" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
@@ -365,27 +410,27 @@ const PackageDetails = () => {
         <div className="lg:w-1/3">
           <div className="sticky top-[80px]">
             {/* Price and Buttons */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
+            <div className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100">
               <div className="flex items-center mb-4">
-                <CurrencyDollarIcon className="h-6 w-6 mr-2" />
+                <CurrencyDollarIcon className="h-6 w-6 mr-2 text-blue-500" />
                 <p className="text-[32px] font-bold">${pkg.price || "N/A"}</p>
               </div>
               <Link
                 to="/booking"
-                className="block p-3 bg-blue-500 text-white text-[24px] font-medium rounded-lg hover:bg-blue-600 mb-4 text-center"
+                className="block p-3 bg-blue-500 text-white text-[24px] font-medium rounded-lg hover:bg-blue-600 mb-4 text-center transition-all duration-200"
               >
                 Book Now
               </Link>
               <Link
                 to="/contact"
-                className="block p-3 bg-gray-200 text-black text-[24px] font-medium rounded-lg hover:bg-gray-300 text-center"
+                className="block p-3 bg-gray-200 text-black text-[24px] font-medium rounded-lg hover:bg-gray-300 text-center transition-all duration-200"
               >
                 Inquire Now
               </Link>
             </div>
 
             {/* Navigation */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
               <nav className="space-y-2">
                 {[
                   { id: "overview", title: "Overview", icon: DocumentTextIcon },
@@ -405,7 +450,7 @@ const PackageDetails = () => {
                 ].map((section, index, arr) => (
                   <div
                     key={section.id}
-                    className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-gray-100 ${
+                    className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-gray-100 transition-all duration-200 ${
                       activeSection === section.id
                         ? "bg-blue-100 text-blue-600"
                         : ""
