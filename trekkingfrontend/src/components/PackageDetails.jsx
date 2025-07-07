@@ -7,8 +7,10 @@ import {
   DocumentTextIcon,
   ListBulletIcon,
   MapIcon,
+  Square2StackIcon as Square2StackOutlineIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Square2StackIcon as Square2StackSolidIcon } from "@heroicons/react/24/solid";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
@@ -22,6 +24,8 @@ const PackageDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("overview");
   const [expandedDays, setExpandedDays] = useState({});
+  const [expandedPacking, setExpandedPacking] = useState({});
+  const [checkedItems, setCheckedItems] = useState({});
   const sectionRefs = useRef({
     overview: useRef(null),
     itinerary: useRef(null),
@@ -78,16 +82,38 @@ const PackageDetails = () => {
   }, []);
 
   const scrollToSection = (sectionId) => {
-    sectionRefs.current[sectionId].current.scrollIntoView({
-      behavior: "smooth",
-    });
-    setActiveSection(sectionId);
+    const element = sectionRefs.current[sectionId].current;
+    if (element) {
+      const offset = 80; // 80px offset for navbar
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: "smooth",
+      });
+      setActiveSection(sectionId);
+    }
   };
 
   const toggleDay = (day) => {
     setExpandedDays((prev) => ({
       ...prev,
       [day]: !prev[day],
+    }));
+  };
+
+  const togglePacking = (category) => {
+    setExpandedPacking((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
+  const toggleCheckbox = (category, e) => {
+    e.stopPropagation(); // Prevent expanding when clicking checkbox
+    setCheckedItems((prev) => ({
+      ...prev,
+      [category]: !prev[category],
     }));
   };
 
@@ -138,11 +164,11 @@ const PackageDetails = () => {
     return difficulty || "N/A";
   };
 
-  // Placeholder itinerary data until backend is updated
+  // Placeholder itinerary data
   const placeholderItinerary = pkg?.duration
     ? Array.from({ length: pkg.duration }, (_, i) => ({
         day: i + 1,
-        title: `Day ${i + 1}: Sample Activity`,
+        title: `Sample Activity`,
         description: `Description for Day ${
           i + 1
         }. This is a placeholder for the itinerary details.`,
@@ -161,6 +187,97 @@ const PackageDetails = () => {
 
   const itineraries =
     pkg?.itineraries?.length > 0 ? pkg.itineraries : placeholderItinerary;
+
+  // Packing list data
+  const packingList = [
+    {
+      category: "General",
+      icon: "general-pk",
+      items: [
+        "Backpack (40-60L)",
+        "Trekking poles",
+        "Water bottle or hydration system",
+        "Headlamp with extra batteries",
+      ],
+    },
+    {
+      category: "Upper Body",
+      icon: "upperbody-pk",
+      items: [
+        "Fleece jacket",
+        "Waterproof/windproof jacket",
+        "Thermal base layers",
+        "T-shirts (moisture-wicking)",
+      ],
+    },
+    {
+      category: "Torso",
+      icon: "torso-pk",
+      items: [
+        "Insulated jacket (down or synthetic)",
+        "Lightweight pullover",
+        "Sports bra (for women)",
+      ],
+    },
+    {
+      category: "Lower Body",
+      icon: "lowerbody-pk",
+      items: [
+        "Trekking pants",
+        "Waterproof pants",
+        "Thermal leggings",
+        "Hiking shorts",
+      ],
+    },
+    {
+      category: "Hands",
+      icon: "hands-pk",
+      items: [
+        "Lightweight gloves",
+        "Insulated gloves",
+        "Mittens for high altitude",
+      ],
+    },
+    {
+      category: "Feet",
+      icon: "feet-pk",
+      items: [
+        "Hiking boots (broken-in)",
+        "Camp shoes or sandals",
+        "Wool socks",
+        "Gaiters",
+      ],
+    },
+    {
+      category: "Undergarments",
+      icon: "undergarments-pk",
+      items: [
+        "Moisture-wicking underwear",
+        "Thermal underwear",
+        "Socks (extra pairs)",
+      ],
+    },
+    {
+      category: "First Aid Kits and Medications",
+      icon: "firstaid-pk",
+      items: [
+        "Personal medications",
+        "Bandages and antiseptic",
+        "Pain relievers",
+        "Altitude sickness medication",
+      ],
+    },
+    {
+      category: "Other Essentials",
+      icon: "otheressensials-pk",
+      items: [
+        "Sunglasses (UV protection)",
+        "Sunscreen (SPF 50+)",
+        "Toiletries",
+        "Quick-dry towel",
+      ],
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -302,12 +419,12 @@ const PackageDetails = () => {
                         alt={item.icon}
                         className="h-6 w-6 mr-2"
                       />
-                      <h3 className="text-[24px] font-medium">{item.title}</h3>
+                      <h3 className="text-[24px] font-medium">{`Day ${item.day}: ${item.title}`}</h3>
                     </div>
                     {expandedDays[item.day] ? (
-                      <ChevronUpIcon className="h-6 w-6 text-gray-500" />
+                      <ChevronUpIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
                     ) : (
-                      <ChevronDownIcon className="h-6 w-6 text-gray-500" />
+                      <ChevronDownIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
                     )}
                   </div>
                   {expandedDays[item.day] && (
@@ -347,9 +464,53 @@ const PackageDetails = () => {
             className="bg-white rounded-2xl p-8 shadow-lg mb-6 border border-gray-100"
           >
             <h2 className="text-[32px] font-bold mb-4">Packing List</h2>
-            <p className="text-[24px] font-medium text-gray-700">
-              Recommended packing list will be provided here.
-            </p>
+            <div className="space-y-4">
+              {packingList.map((item) => (
+                <div
+                  key={item.category}
+                  className={`rounded-2xl p-4 shadow-lg transition-all duration-300 border border-gray-100 hover:shadow-xl ${
+                    checkedItems[item.category] ? "bg-gray-400" : "bg-white"
+                  }`}
+                  onClick={() => togglePacking(item.category)}
+                >
+                  <div className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      {checkedItems[item.category] ? (
+                        <Square2StackSolidIcon
+                          className="h-6 w-6 text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                          onClick={(e) => toggleCheckbox(item.category, e)}
+                        />
+                      ) : (
+                        <Square2StackOutlineIcon
+                          className="h-6 w-6 text-gray-500 hover:text-blue-600 transition-colors duration-200"
+                          onClick={(e) => toggleCheckbox(item.category, e)}
+                        />
+                      )}
+                      <img
+                        src={`/icons/${item.icon}.png`}
+                        alt={item.category}
+                        className="h-6 w-6"
+                      />
+                      <h3 className="text-[24px] font-medium">
+                        {item.category}
+                      </h3>
+                    </div>
+                    {expandedPacking[item.category] ? (
+                      <ChevronUpIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
+                    ) : (
+                      <ChevronDownIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
+                    )}
+                  </div>
+                  {expandedPacking[item.category] && (
+                    <ul className="mt-4 text-[18px] font-medium text-gray-700 list-disc pl-6 transition-all duration-300">
+                      {item.items.map((subItem, index) => (
+                        <li key={index}>{subItem}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
           <div
             id="includes"
