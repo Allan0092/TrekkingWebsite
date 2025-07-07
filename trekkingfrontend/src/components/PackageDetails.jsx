@@ -1,13 +1,14 @@
 import {
   BriefcaseIcon,
   CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   CurrencyDollarIcon,
   DocumentTextIcon,
   ListBulletIcon,
   MapIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
@@ -20,6 +21,7 @@ const PackageDetails = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("overview");
+  const [expandedDays, setExpandedDays] = useState({});
   const sectionRefs = useRef({
     overview: useRef(null),
     itinerary: useRef(null),
@@ -81,6 +83,13 @@ const PackageDetails = () => {
     setActiveSection(sectionId);
   };
 
+  const toggleDay = (day) => {
+    setExpandedDays((prev) => ({
+      ...prev,
+      [day]: !prev[day],
+    }));
+  };
+
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -128,6 +137,30 @@ const PackageDetails = () => {
     return difficulty || "N/A";
   };
 
+  // Placeholder itinerary data until backend is updated
+  const placeholderItinerary = pkg?.duration
+    ? Array.from({ length: pkg.duration }, (_, i) => ({
+        day: i + 1,
+        title: `Day ${i + 1}: Sample Activity`,
+        description: `Description for Day ${
+          i + 1
+        }. This is a placeholder for the itinerary details.`,
+        icon:
+          i === 0
+            ? "plane-land"
+            : i === pkg.duration - 1
+            ? "flight-depart"
+            : i === Math.floor(pkg.duration / 2)
+            ? "highest-point"
+            : i % 2 === 0
+            ? "hike-up"
+            : "hike-down",
+      }))
+    : [];
+
+  const itineraries =
+    pkg?.itineraries?.length > 0 ? pkg.itineraries : placeholderItinerary;
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter text-[24px] font-medium text-center py-4">
@@ -138,7 +171,7 @@ const PackageDetails = () => {
 
   if (error || !pkg) {
     return (
-      <div className="container mx-auto p-4 bg-[#F6FFFF] font-inter text-[24px] font-medium text-center py-4 text-red-500">
+      <div className="container mx-auto p-4 bg-[#F6FFFF] text-black font-inter text-[24px] font-medium text-center py-4 text-red-500">
         {error || "Package not found."}
       </div>
     );
@@ -255,9 +288,36 @@ const PackageDetails = () => {
             className="bg-white rounded-2xl p-8 shadow-lg mb-6"
           >
             <h2 className="text-[32px] font-bold mb-4">Itinerary</h2>
-            <p className="text-[24px] font-medium">
-              Detailed itinerary will be provided here.
-            </p>
+            <div className="space-y-4">
+              {itineraries.map((item) => (
+                <div
+                  key={item.day}
+                  className="bg-white rounded-2xl p-4 shadow-lg transition-all duration-300"
+                  onClick={() => toggleDay(item.day)}
+                >
+                  <div className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center">
+                      <img
+                        src={`/icons/${item.icon}.png`}
+                        alt={item.icon}
+                        className="h-6 w-6 mr-2"
+                      />
+                      <h3 className="text-[24px] font-medium">{item.title}</h3>
+                    </div>
+                    {expandedDays[item.day] ? (
+                      <ChevronUpIcon className="h-6 w-6 text-gray-500" />
+                    ) : (
+                      <ChevronDownIcon className="h-6 w-6 text-gray-500" />
+                    )}
+                  </div>
+                  {expandedDays[item.day] && (
+                    <div className="mt-4 text-[18px] font-medium text-gray-700">
+                      {item.description}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
           <div
             id="map"

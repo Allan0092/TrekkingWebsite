@@ -13,10 +13,8 @@ The Trekking Website is a React-based web application designed to promote trekki
 5. FAQs: An accordion-style section answering common questions about trekking in Nepal, such as internet availability and visa information.
 6. Newsletter Subscription: A form to collect email addresses for updates on trekking packages and offers.
 7. Responsive Design: Optimized for desktop and mobile devices using Tailwind CSS, ensuring accessibility and a consistent user experience.
-8. Routing: Supports navigation to Home (/), Packages (/packages), Package Details (/packages/:id), Sign Up (/signup), Login (/login), About (/about), Contact (/contact), and Search (/search) pages.
+8. Routing: Supports navigation to Home (/), Packages (/packages), Package Details (/packages/:id), Sign Up (/signup), Login (/login), About (/about), Contact (/contact), and Booking (/booking).
 9. Error Handling: Includes an ErrorBoundary component for the Packages page to handle API fetch errors gracefully.
-
----
 
 ## Tech Stack
 
@@ -28,16 +26,11 @@ The Trekking Website is a React-based web application designed to promote trekki
 
 ### Backend:
 
-Django
+- Django
 
-## Dependencies:
+### Database:
 
-- react-router-dom
-- react-slick
-- slick-carousel
-- @heroicons/react
-
----
+- PostgreSql
 
 ## API Endpoints
 
@@ -45,10 +38,11 @@ The frontend communicates with a backend restful APIs to fetch trekking package 
 
 - GET /api/packages/
   Description: Retrieves a list of trekking packages.
+  Usage: Fetched in Homepage.jsx and PackageList.jsx to display package cards.
 
-## Usage: Fetched in Homepage.jsx and PackageList.jsx to display package cards.
-
----
+- GET /api/packges/:id/
+  Description: Retrieves all the detials of a specific package
+  Usage: Fetched in /packages/:id to display package information.
 
 # Installation
 
@@ -68,26 +62,25 @@ npm install
 
 - Install Backend Dependencies
 
-`cd backend`
-`python -m venv venv`
-`source venv/bin/activate # On Windows: venv\Scripts\activate`
-`pip install -r requirements.txt`
-
-## Set Up Assets:
-
-Ensure public/logo.png and public/icons/crown.png exist.
-Place slider images (public/images/5.jpeg, public/images/8.JPG, public/images/9.jpeg) in 16:9 ratio (e.g., 1920x1080px).
-Add Inter font in trekkingfrontend/index.html:<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+```
+python -m venv venv
+source venv/bin/activate # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
 ## Run the Backend:
 
-`cd backend`
-`python manage.py runserver`
+```
+cd backend
+python manage.py runserver
+```
 
 ## Run the Frontend:
 
-`cd trekkingfrontend`
-`npm run dev`
+```
+cd trekkingfrontend
+npm run dev
+```
 
 ## Access the Application:
 
