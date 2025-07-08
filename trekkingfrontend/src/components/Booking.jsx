@@ -110,9 +110,33 @@ const Booking = () => {
       const newPeople = [...prev];
       newPeople[index] = { ...newPeople[index], [field]: value };
 
-      // Clear shareRoomWith if room type changes to Single
-      if (field === "room" && value === "Single") {
+      // If changing room type from Shared to Single
+      if (
+        field === "room" &&
+        value === "Single" &&
+        prev[index].room === "Shared"
+      ) {
+        // Clear this person's roommate selection
         newPeople[index].shareRoomWith = "";
+
+        // Clear any other person who had selected this person as roommate.
+        const personName = prev[index].fullName;
+        if (personName) {
+          newPeople.forEach((person, i) => {
+            if (i !== index && person.shareRoomWith === personName) {
+              newPeople[i].shareRoomWith = "";
+            }
+          });
+        }
+      }
+
+      // Auto-select roommate in both directions
+      if (field === "shareRoomWith" && value) {
+        const roommateIndex = newPeople.findIndex((p) => p.fullName === value);
+        if (roommateIndex !== -1) {
+          newPeople[roommateIndex].room = "Shared";
+          newPeople[roommateIndex].shareRoomWith = newPeople[index].fullName;
+        }
       }
 
       // Auto-fill common fields from Person 1
@@ -148,7 +172,8 @@ const Booking = () => {
           index !== currentIndex &&
           person.fullName.trim() !== "" &&
           person.room === "Shared" &&
-          !person.shareRoomWith // Not already paired
+          // Modified condition: either not paired or paired with currentPerson
+          (!person.shareRoomWith || person.shareRoomWith === currentPerson.fullName)
       )
       .map(({ person }) => person.fullName);
   };
@@ -186,7 +211,8 @@ const Booking = () => {
 
       // Phone validation
       if (person.phone) {
-        const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}$/;
+        const phoneRegex =
+          /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}$/;
         if (!phoneRegex.test(person.phone)) {
           errors[`${index}-phone`] = "Please enter a valid phone number";
         }
@@ -207,6 +233,15 @@ const Booking = () => {
       if (person.room === "Shared") {
         if (!person.shareRoomWith) {
           errors[`${index}-shareRoomWith`] = "Please select a roommate";
+        } else {
+          // Check if selected roommate exists and has Shared room selected
+          const roommateIndex = people.findIndex(
+            (p) => p.fullName === person.shareRoomWith
+          );
+          if (roommateIndex === -1 || people[roommateIndex].room !== "Shared") {
+            errors[`${index}-shareRoomWith`] =
+              "Selected roommate is not available for sharing";
+          }
         }
       }
 
@@ -225,7 +260,8 @@ const Booking = () => {
           oneYearAgo.setFullYear(today.getFullYear() - 1);
 
           if (birthDate > oneYearAgo) {
-            errors[`${index}-dateOfBirth`] = "Person must be at least one year old";
+            errors[`${index}-dateOfBirth`] =
+              "Person must be at least one year old";
           }
         }
       }
