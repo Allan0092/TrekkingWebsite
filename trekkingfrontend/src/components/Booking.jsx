@@ -315,6 +315,11 @@ const Booking = () => {
     e.preventDefault();
 
     if (!validateForm()) {
+      // Scroll to top when validation fails
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'  // Add smooth scrolling
+      });
       return;
     }
 

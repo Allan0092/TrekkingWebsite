@@ -97,17 +97,19 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="hidden lg:flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className={`p-2 rounded-full transition-colors duration-300 ${
-                isScrolled
-                  ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
-                  : "text-neutral-900 hover:text-primary-600 hover:bg-white/10"
-              }`}
-            >
-              <Search className="w-5 h-5" />
-            </motion.button>
+            <Link to="/packages">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className={`p-2 rounded-full transition-colors duration-300 ${
+                  isScrolled
+                    ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
+                    : "text-neutral-900 hover:text-primary-600 hover:bg-white/10"
+                }`}
+              >
+                <Search className="w-5 h-5" />
+              </motion.button>
+            </Link>
 
             {user ? (
               <div className="relative">
