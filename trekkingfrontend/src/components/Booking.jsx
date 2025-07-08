@@ -174,9 +174,22 @@ const Booking = () => {
         }
       });
 
+      // Full name validation - check for text characters
+      if (person.fullName && !/[a-zA-Z]/.test(person.fullName)) {
+        errors[`${index}-fullName`] = "Full name must contain letters";
+      }
+
       // Email validation
       if (person.email && !/\S+@\S+\.\S+/.test(person.email)) {
         errors[`${index}-email`] = "Please enter a valid email address";
+      }
+
+      // Phone validation
+      if (person.phone) {
+        const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}$/;
+        if (!phoneRegex.test(person.phone)) {
+          errors[`${index}-phone`] = "Please enter a valid phone number";
+        }
       }
 
       // Date validation
@@ -194,6 +207,26 @@ const Booking = () => {
       if (person.room === "Shared") {
         if (!person.shareRoomWith) {
           errors[`${index}-shareRoomWith`] = "Please select a roommate";
+        }
+      }
+
+      // Date of birth validation - can't be today/future & must be >1 year old
+      if (person.dateOfBirth) {
+        const today = new Date();
+        const birthDate = new Date(person.dateOfBirth);
+
+        // Check if birth date is today or in the future
+        if (birthDate >= new Date(today.setHours(0, 0, 0, 0))) {
+          errors[`${index}-dateOfBirth`] =
+            "Date of birth cannot be today or in the future";
+        } else {
+          // Check if person is at least one year old
+          const oneYearAgo = new Date();
+          oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+          if (birthDate > oneYearAgo) {
+            errors[`${index}-dateOfBirth`] = "Person must be at least one year old";
+          }
         }
       }
     });
@@ -566,12 +599,13 @@ const Booking = () => {
                         e.target.value
                       )
                     }
+                    pattern="[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}"
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       validationErrors[`${currentPersonIndex}-phone`]
                         ? "border-red-500"
                         : "border-gray-300"
                     }`}
-                    placeholder="Enter phone number"
+                    placeholder="e.g. +1 (555) 123-4567"
                   />
                   {validationErrors[`${currentPersonIndex}-phone`] && (
                     <p className="mt-1 text-sm text-red-600">
