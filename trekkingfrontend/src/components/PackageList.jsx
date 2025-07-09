@@ -307,14 +307,26 @@ const PackageList = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative py-16 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/images/himalayas.jpeg"
+            alt="Himalayan Trekking"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">
-              Discover Your Perfect Trek
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              Packages
             </h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto text-white drop-shadow-md">
+              Discover Your Perfect Trek
+              <br />
               Explore the majestic Himalayas with our carefully curated trekking
               packages
             </p>
