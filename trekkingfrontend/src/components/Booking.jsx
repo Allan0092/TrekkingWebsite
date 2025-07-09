@@ -482,7 +482,7 @@ const Booking = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
             Complete Your Booking
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
