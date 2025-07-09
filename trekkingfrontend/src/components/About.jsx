@@ -32,7 +32,7 @@ const About = () => {
     {
       name: "Hari Gautam",
       role: "Founder & Lead Guide",
-      image: "/images/small-village.jpeg",
+      image: "/images/person1.png",
       experience: "15+ years",
       description:
         "Everest summiteer with extensive high-altitude experience and deep knowledge of Himalayan culture.",
@@ -40,7 +40,7 @@ const About = () => {
     {
       name: "Martin Gautam",
       role: "Operations Manager",
-      image: "/images/european-city.jpeg",
+      image: "/images/person2.png",
       experience: "3+ years",
       description:
         "Expert in logistics and customer service, ensuring seamless trekking experiences for all our clients.",
@@ -48,7 +48,7 @@ const About = () => {
     {
       name: "Allan Gautam",
       role: "IT Department",
-      image: "images/himalayas.jpeg",
+      image: "/images/person3.png",
       experience: "5+ years",
       description: "Certified in the technical department.",
     },
@@ -121,7 +121,7 @@ const About = () => {
           </div>
           <div className="relative">
             <img
-              src="/images/random-colours.jpeg"
+              src="/images/small-village.jpeg"
               alt="Nepal mountain village"
               className="w-full rounded-2xl shadow-lg"
             />
@@ -212,7 +212,7 @@ const About = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-3xl p-8 lg:p-12">
+        <div className="bg-neutral-800 rounded-3xl p-8 lg:p-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center text-white">
             <div>
               <div className="text-4xl font-bold mb-2">500+</div>
@@ -223,7 +223,7 @@ const About = () => {
               <div className="text-primary-100">Trek Routes</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">5+</div>
+              <div className="text-4xl font-bold mb-2">20+</div>
               <div className="text-primary-100">Years Experience</div>
             </div>
             <div>
