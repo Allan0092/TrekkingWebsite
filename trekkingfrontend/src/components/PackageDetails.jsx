@@ -103,7 +103,7 @@ const PackageDetails = () => {
   };
 
   const toggleCheckbox = (category, e) => {
-    e.stopPropagation(); // Prevent expanding when clicking checkbox
+    e.stopPropagation();
     setCheckedItems((prev) => ({
       ...prev,
       [category]: !prev[category],
@@ -403,9 +403,18 @@ const PackageDetails = () => {
                     onClick={() => toggleDay(item.day)}
                   >
                     <div className="flex items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-300">
-                      <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
-                        <span className="text-green-600 font-bold">
-                          {item.day}
+                      <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex flex-col items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                        {/* Icon */}
+                        {item.icon && (
+                          <img
+                            src={`/icons/${item.icon}.png`}
+                            alt={item.icon}
+                            className="w-6 h-6 mb-1"
+                          />
+                        )}
+                        {/* Day number */}
+                        <span className="text-green-600 font-bold text-xs">
+                          Day {item.day}
                         </span>
                       </div>
                       <div className="flex-grow">
@@ -434,7 +443,7 @@ const PackageDetails = () => {
               </div>
             </section>
 
-            {/* Map Section - Full width, no box */}
+            {/* Map Section */}
             <section id="map" ref={sectionRefs.current.map} className="mb-16">
               <div className="border-l-4 border-orange-500 pl-8 mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -443,7 +452,7 @@ const PackageDetails = () => {
               </div>
               <div className="relative overflow-hidden rounded-2xl shadow-2xl">
                 <img
-                  src="/icons/map-placeholder.png"
+                  src="/icons/map-placeholder.jpg"
                   alt="Trekking Route Map"
                   className="w-full min-h-[500px] object-cover"
                 />
@@ -588,7 +597,7 @@ const PackageDetails = () => {
             </div>
           </div>
 
-          {/* Right Sidebar - Enhanced */}
+          {/* Right Sidebar */}
           <div className="lg:w-1/3">
             <div className="sticky top-[80px]">
               {/* Booking Card */}
