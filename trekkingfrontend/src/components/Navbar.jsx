@@ -48,17 +48,17 @@ const Navbar = () => {
                 <img
                   src="/logo.png"
                   alt="Trekking Website Logo"
-                  className="h-12"
+                  className="h-12 rounded-4xl"
                 />
                 <div className="absolute inset-0 bg-primary-400 rounded-full blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               </div>
-              <span
+              {/* <span
                 className={`font-display font-bold text-xl lg:text-2xl transition-colors duration-300 ${
                   isScrolled ? "text-neutral-900" : "text-neutral-800"
                 }`}
               >
                 Himalaya Adventure
-              </span>
+              </span> */}
             </Link>
           </motion.div>
 
@@ -186,24 +186,9 @@ const Navbar = () => {
                 >
                   <Link
                     to="/login"
-                    className={`font-medium transition-colors duration-300 ${
-                      isScrolled
-                        ? "text-neutral-700 hover:text-primary-600"
-                        : "text-neutral-900 hover:text-primary-800"
-                    }`}
+                    className="bg-gradient-to-r from-neutral-600 to-neutral-700 text-white px-6 py-2 rounded-lg hover:from-neutral-700 hover:to-neutral-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                   >
-                    Sign In
-                  </Link>
-                </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link
-                    to="/signup"
-                    className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2 rounded-full hover:from-primary-700 hover:to-primary-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
-                  >
-                    Sign Up
+                    Login
                   </Link>
                 </motion.div>
               </div>
@@ -322,17 +307,10 @@ const Navbar = () => {
                   >
                     <Link
                       to="/login"
-                      className="text-neutral-700 font-medium hover:text-primary-600 transition-colors"
+                      className="bg-gradient-to-r from-neutral-600 to-neutral-700 text-white px-6 py-2  font-medium shadow-lg"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Sign In
-                    </Link>
-                    <Link
-                      to="/signup"
-                      className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2  font-medium shadow-lg"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Sign Up
+                      Login
                     </Link>
                   </motion.div>
                 )}
