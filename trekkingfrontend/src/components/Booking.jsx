@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const Booking = () => {
   const [pkg, setPkg] = useState(null);
@@ -40,30 +41,61 @@ const Booking = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock package data for demo
+  // Get package ID from URL parameters
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  // Extract package ID from URL parameters or pathname
+  const getPackageId = () => {
+    // First try to get from ?package= parameter
+    const packageParam = searchParams.get("package");
+    if (packageParam) return packageParam;
+
+    // Then try to extract from pathname if it's like /booking/7
+    const pathParts = location.pathname.split("/");
+    const lastPart = pathParts[pathParts.length - 1];
+    if (lastPart && !isNaN(lastPart)) return lastPart;
+
+    return null;
+  };
+
+  // Fetch package data from API
   useEffect(() => {
     const fetchPackage = async () => {
+      const packageId = getPackageId();
+
+      if (!packageId) {
+        setError("No package ID provided");
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setError("");
 
-        const mockPackage = {
-          id: 4,
-          name: "Everest Base Camp Trek",
-          duration: 14,
-          price: 1200,
-          altitude: 5364,
-          difficulty: "TOUGH",
-          description:
-            "Experience the ultimate adventure with our Everest Base Camp trek.",
-          images: [
-            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-            "https://images.unsplash.com/photo-1464822759844-d150baef493e?w=800&h=600&fit=crop",
-          ],
+        const response = await fetch(
+          `http://localhost:8000/api/packages/${packageId}/`
+        );
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error("Package not found");
+          }
+          throw new Error(`Failed to fetch package: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched package:", data);
+
+        // Ensure price is a number
+        const processedPackage = {
+          ...data,
+          price: parseFloat(data.price) || 0,
+          altitude: parseFloat(data.altitude) || 0,
         };
 
-        setPkg(mockPackage);
+        setPkg(processedPackage);
       } catch (err) {
         console.error("Error fetching package:", err);
         setError(err.message);
@@ -73,7 +105,7 @@ const Booking = () => {
     };
 
     fetchPackage();
-  }, []);
+  }, [searchParams, location.pathname]);
 
   useEffect(() => {
     setPeople((prev) => {
@@ -173,7 +205,8 @@ const Booking = () => {
           person.fullName.trim() !== "" &&
           person.room === "Shared" &&
           // Modified condition: either not paired or paired with currentPerson
-          (!person.shareRoomWith || person.shareRoomWith === currentPerson.fullName)
+          (!person.shareRoomWith ||
+            person.shareRoomWith === currentPerson.fullName)
       )
       .map(({ person }) => person.fullName);
   };
@@ -318,7 +351,7 @@ const Booking = () => {
       // Scroll to top when validation fails
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'  // Add smooth scrolling
+        behavior: "smooth",
       });
       return;
     }
@@ -397,9 +430,20 @@ const Booking = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-100">
         <div className="text-center">
           <AlertCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
-          <p className="text-xl font-medium text-red-700">
+          <h2 className="text-2xl font-bold text-red-700 mb-2">
+            {error === "Package not found"
+              ? "Package Not Found"
+              : "Error Loading Package"}
+          </h2>
+          <p className="text-lg text-red-600 mb-4">
             {error || "Package not found."}
           </p>
+          <button
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -424,9 +468,8 @@ const Booking = () => {
 
         {/* Package Overview */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Package Overview
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{pkg.title}</h2>
+          <p className="text-gray-600 mb-6 line-clamp-2">{pkg.description}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-blue-100 rounded-full">
@@ -475,7 +518,7 @@ const Booking = () => {
 
         {/* Booking Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Number of People */}
+          {/* Group Size */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
               Group Size
@@ -922,7 +965,7 @@ const Booking = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Package:</span>
-                  <span className="font-semibold">{pkg.name}</span>
+                  <span className="font-semibold">{pkg.title}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">People:</span>

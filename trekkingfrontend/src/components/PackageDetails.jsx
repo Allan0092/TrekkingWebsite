@@ -648,7 +648,7 @@ const PackageDetails = () => {
                     },
                     {
                       id: "itinerary",
-                      title: "Daily Plan",
+                      title: "Daily Itinerary",
                       icon: "🗓️",
                       color: "green",
                     },
@@ -660,7 +660,7 @@ const PackageDetails = () => {
                     },
                     {
                       id: "packing",
-                      title: "Packing List",
+                      title: "Packing Checklist",
                       icon: "🎒",
                       color: "blue",
                     },
