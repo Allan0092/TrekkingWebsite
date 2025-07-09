@@ -1,16 +1,9 @@
 import {
-  BriefcaseIcon,
   CheckCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  CurrencyDollarIcon,
-  DocumentTextIcon,
-  ListBulletIcon,
-  MapIcon,
-  Square2StackIcon as Square2StackOutlineIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Square2StackIcon as Square2StackSolidIcon } from "@heroicons/react/24/solid";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
@@ -296,30 +289,63 @@ const PackageDetails = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-[#F6FFFF] text-black font-inter">
-      {/* Image Slider */}
-      <div className="mb-8 w-full">
+    <div className="w-full bg-gradient-to-b from-gray-50 to-white text-black font-inter">
+      {/* Hero Section with Image Slider */}
+      <div className="relative mb-12">
         {pkg.images && pkg.images.length > 0 ? (
           <>
-            <Slider {...sliderSettings} ref={sliderRef}>
-              {pkg.images.map((img) => (
-                <div key={img.id}>
-                  <img
-                    src={img.image}
-                    alt={img.alt_text || pkg.title}
-                    className="w-full h-[80vh] object-cover rounded-xl shadow-md"
-                    aria-label={`Image of ${img.alt_text || pkg.title}`}
-                  />
+            <div className="relative h-[70vh] overflow-hidden">
+              <Slider {...sliderSettings} ref={sliderRef}>
+                {pkg.images.map((img) => (
+                  <div key={img.id}>
+                    <img
+                      src={img.image}
+                      alt={img.alt_text || pkg.title}
+                      className="w-full h-[70vh] object-cover"
+                      aria-label={`Image of ${img.alt_text || pkg.title}`}
+                    />
+                  </div>
+                ))}
+              </Slider>
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+              {/* Title overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                    {pkg.title || "Unnamed Package"}
+                  </h1>
+                  <div className="flex flex-wrap gap-6 text-lg">
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      🗓️ {pkg.duration || "N/A"} days
+                    </span>
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      💰 ${pkg.price || "N/A"}
+                    </span>
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      ⛰️ {pkg.altitude || "N/A"}m
+                    </span>
+                    <span
+                      className={`bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full ${getDifficultyColor(
+                        pkg.difficulty
+                      )}`}
+                    >
+                      🎯 {formatDifficulty(pkg.difficulty)}
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </Slider>
-            <div className="flex gap-4 mt-4 justify-center">
+              </div>
+            </div>
+
+            {/* Thumbnail navigation */}
+            <div className="flex gap-4 mt-6 justify-center px-4">
               {pkg.images.map((img, index) => (
                 <img
                   key={img.id}
                   src={img.image}
                   alt={`Thumbnail ${img.alt_text || pkg.title}`}
-                  className="w-20 h-20 object-cover rounded-md cursor-pointer hover:opacity-80 border border-gray-200 hover:border-blue-500 transition-all duration-200"
+                  className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 border-2 border-transparent hover:border-blue-400 transition-all duration-200 shadow-md"
                   onClick={() => sliderRef.current.slickGoTo(index)}
                   aria-label={`Select thumbnail ${index + 1}`}
                 />
@@ -327,331 +353,332 @@ const PackageDetails = () => {
             </div>
           </>
         ) : (
-          <p className="text-[24px] font-medium text-gray-500 text-center">
-            No images available.
-          </p>
+          <div className="h-[70vh] bg-gray-200 flex items-center justify-center">
+            <p className="text-2xl text-gray-500">No images available</p>
+          </div>
         )}
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-        {/* Left Section */}
-        <div className="lg:w-2/3">
-          {/* Title */}
-          <h1 className="text-[48px] sm:text-[56px] font-bold mb-8 bg-gradient-to-r from-blue-700 to-teal-600 text-transparent bg-clip-text [text-shadow:_0_2px_4px_rgba(0,0,0,0.1)] animate-fade-in">
-            {pkg.title || "Unnamed Package"}
-          </h1>
-
-          {/* Summary Box */}
-          <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex items-center">
-                <img
-                  src="/icons/calendar.png"
-                  alt="Calendar"
-                  className="h-8 w-8 mr-3"
-                />
-                <p className="text-[24px] font-medium text-gray-800">
-                  {pkg.duration || "N/A"} days
-                </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Left Section */}
+          <div className="lg:w-2/3">
+            {/* Overview Section - Clean, no box */}
+            <section
+              id="overview"
+              ref={sectionRefs.current.overview}
+              className="mb-16"
+            >
+              <div className="border-l-4 border-blue-500 pl-8 mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                  Overview
+                </h2>
               </div>
-              <div className="flex items-center">
-                <img
-                  src="/icons/dollar.png"
-                  alt="Price"
-                  className="h-8 w-8 mr-3"
-                />
-                <p className="text-[24px] font-medium text-gray-800">
-                  ${pkg.price || "N/A"}
-                </p>
+              <div className="text-lg leading-relaxed text-gray-700 space-y-4">
+                {pkg.description
+                  ?.split("\n")
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  )) || <p>No description available.</p>}
               </div>
-              <div className="flex items-center">
-                <img
-                  src="/icons/mountain_peak.png"
-                  alt="Altitude"
-                  className="h-8 w-8 mr-3"
-                />
-                <p className="text-[24px] font-medium text-gray-800">
-                  {pkg.altitude || "N/A"}m
-                </p>
+            </section>
+
+            {/* Itinerary Section - Card style */}
+            <section
+              id="itinerary"
+              ref={sectionRefs.current.itinerary}
+              className="mb-16"
+            >
+              <div className="border-l-4 border-green-500 pl-8 mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                  Daily Itinerary
+                </h2>
               </div>
-              <div className="flex items-center">
-                <img
-                  src="/icons/difficulty.png"
-                  alt="Difficulty"
-                  className="h-8 w-8 mr-3"
-                />
-                <p
-                  className={`text-[24px] font-medium ${getDifficultyColor(
-                    pkg.difficulty
-                  )}`}
-                >
-                  {formatDifficulty(pkg.difficulty)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Sections */}
-          <div
-            id="overview"
-            ref={sectionRefs.current.overview}
-            className="bg-white rounded-xl p-8 shadow-lg mb-8 border-l-4 border-teal-500 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
-              Overview
-            </h2>
-            <p className="text-[24px] font-normal text-gray-700">
-              {pkg.description || "No description available."}
-            </p>
-          </div>
-
-          <div
-            id="itinerary"
-            ref={sectionRefs.current.itinerary}
-            className="bg-teal-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
-              Itinerary
-            </h2>
-            <div className="space-y-4">
-              {itineraries.map((item) => (
-                <div
-                  key={item.day}
-                  className="bg-white rounded-xl p-4 shadow-md transition-all duration-300 border border-gray-100 hover:bg-teal-100 hover:shadow-xl"
-                  onClick={() => toggleDay(item.day)}
-                  aria-label={`Expand Day ${item.day} itinerary`}
-                >
-                  <div className="flex items-center justify-between cursor-pointer">
-                    <div className="flex items-center">
-                      <img
-                        src={`/icons/${item.icon}.png`}
-                        alt={item.icon}
-                        className="h-6 w-6 mr-2"
-                      />
-                      <h3 className="text-[24px] font-medium text-gray-800">{`Day ${item.day}: ${item.title}`}</h3>
-                    </div>
-                    {expandedDays[item.day] ? (
-                      <ChevronUpIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
-                    ) : (
-                      <ChevronDownIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
-                    )}
-                  </div>
-                  {expandedDays[item.day] && (
-                    <div className="mt-4 text-[18px] font-normal text-gray-700 transition-all duration-300">
-                      {item.description}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div
-            id="map"
-            ref={sectionRefs.current.map}
-            className="bg-white rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">Map</h2>
-            <div className="relative overflow-hidden rounded-xl">
-              <img
-                src="/icons/map-placeholder.png"
-                alt="Trekking Route Map"
-                className="w-full min-h-[400px] object-contain rounded-xl border border-gray-200 hover:scale-[1.02] transition-transform duration-300"
-                aria-label="Trekking route map"
-              />
-              <div className="absolute top-4 left-4 bg-blue-600 text-white text-[16px] font-medium px-4 py-2 rounded-full shadow-md">
-                Trekking Route
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/30 rounded-xl" />
-            </div>
-          </div>
-
-          <div
-            id="packing"
-            ref={sectionRefs.current.packing}
-            className="bg-gray-50 rounded-xl p-8 shadow-lg mb-8 border-l-4 border-blue-500 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
-              Packing List
-            </h2>
-            <div className="space-y-4">
-              {packingList.map((item) => (
-                <div
-                  key={item.category}
-                  className={`rounded-xl p-4 shadow-md transition-all duration-300 border border-gray-100 hover:shadow-xl ${
-                    checkedItems[item.category] ? "bg-gray-400" : "bg-white"
-                  }`}
-                  onClick={() => togglePacking(item.category)}
-                  aria-label={`Expand ${item.category} packing list`}
-                >
-                  <div className="flex items-center justify-between cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      {checkedItems[item.category] ? (
-                        <Square2StackSolidIcon
-                          className="h-6 w-6 text-blue-500 hover:text-blue-600 transition-colors duration-200 animate-pulse"
-                          onClick={(e) => toggleCheckbox(item.category, e)}
-                          aria-label={`Uncheck ${item.category}`}
-                        />
-                      ) : (
-                        <Square2StackOutlineIcon
-                          className="h-6 w-6 text-gray-500 hover:text-blue-600 transition-colors duration-200"
-                          onClick={(e) => toggleCheckbox(item.category, e)}
-                          aria-label={`Check ${item.category}`}
-                        />
-                      )}
-                      <img
-                        src={`/icons/${item.icon}.png`}
-                        alt={item.category}
-                        className="h-6 w-6"
-                      />
-                      <h3 className="text-[24px] font-medium text-gray-800">
-                        {item.category}
-                      </h3>
-                    </div>
-                    {expandedPacking[item.category] ? (
-                      <ChevronUpIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
-                    ) : (
-                      <ChevronDownIcon className="h-6 w-6 text-gray-500 hover:text-blue-500 transition-colors duration-200" />
-                    )}
-                  </div>
-                  {expandedPacking[item.category] && (
-                    <ul className="mt-4 text-[18px] font-normal text-gray-700 list-disc pl-6 transition-all duration-300">
-                      {item.items.map((subItem, index) => (
-                        <li key={index}>{subItem}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div
-            id="includes"
-            ref={sectionRefs.current.includes}
-            className="bg-green-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
-              Price Includes
-            </h2>
-            <ul className="space-y-2">
-              {[
-                "Accommodation in standard hotels and teahouses during the trek",
-                "All meals (breakfast, lunch, and dinner) during the trekking period",
-                "Experienced English-speaking trekking guide",
-                "Porter services (1 porter per 2 trekkers, max 15kg luggage per person)",
-                "All necessary trekking permits and entrance fees",
-                "Domestic flights to and from the trekking starting point",
-                "First aid kit and emergency oxygen supply",
-                "All ground transportation as per the itinerary",
-              ].map((item, index) => (
-                <li
-                  key={index}
-                  className="flex items-start text-[18px] font-normal text-gray-700 hover:text-blue-500 transition-colors duration-200"
-                >
-                  <CheckCircleIcon className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-1 hover:scale-110 transition-transform duration-200" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div
-            id="excludes"
-            ref={sectionRefs.current.excludes}
-            className="bg-red-50 rounded-xl p-8 shadow-lg mb-8 border border-gray-100 animate-fade-in"
-          >
-            <h2 className="text-[32px] font-bold mb-4 text-gray-800">
-              Price Excludes
-            </h2>
-            <ul className="space-y-2">
-              {[
-                "Lunch and dinner in Kathmandu",
-                "International flight fare and airport departure tax",
-                "Nepal Entry Visa (Visa can be acquired easily after your arrival at Tribhuvan International Airport in Kathmandu with a fee of USD 30 for 15 days visa, USD 50 for 30 days visa and USD 125 for 90 days visa)",
-                "Travel insurance along with high-altitude emergency evacuation coverage",
-                "Any beverages including bottled and boiled water",
-                "Tips to trekking staff and driver",
-                "Personal trekking gear and equipment",
-              ].map((item, index) => (
-                <li
-                  key={index}
-                  className="flex items-start text-[18px] font-normal text-gray-700 hover:text-red-500 transition-colors duration-200"
-                >
-                  <XCircleIcon className="h-5 w-5 mr-2 text-red-500 flex-shrink-0 mt-1 hover:scale-110 transition-transform duration-200" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="lg:w-1/3">
-          <div className="sticky top-[80px]">
-            {/* Price and Buttons */}
-            <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl p-8 shadow-lg mb-6 border border-gray-100 animate-fade-in">
-              <div className="flex items-center mb-4">
-                <CurrencyDollarIcon className="h-6 w-6 mr-2 text-blue-500" />
-                <p className="text-[32px] font-bold text-gray-800">
-                  ${pkg.price || "N/A"}
-                </p>
-              </div>
-              <Link
-                to="/booking"
-                className="block p-3 bg-blue-500 text-white text-[24px] font-medium rounded-lg hover:bg-blue-600 mb-4 text-center transition-all duration-200"
-                aria-label="Book this package"
-              >
-                Book Now
-              </Link>
-              <Link
-                to="/contact"
-                className="block p-3 bg-gray-200 text-black text-[24px] font-medium rounded-lg hover:bg-gray-300 text-center transition-all duration-200"
-                aria-label="Inquire about this package"
-              >
-                Inquire Now
-              </Link>
-            </div>
-
-            {/* Navigation */}
-            <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl p-8 shadow-lg border border-gray-100 animate-fade-in">
-              <nav className="space-y-2">
-                {[
-                  { id: "overview", title: "Overview", icon: DocumentTextIcon },
-                  { id: "itinerary", title: "Itinerary", icon: ListBulletIcon },
-                  { id: "map", title: "Map", icon: MapIcon },
-                  { id: "packing", title: "Packing List", icon: BriefcaseIcon },
-                  {
-                    id: "includes",
-                    title: "Price Includes",
-                    icon: CheckCircleIcon,
-                  },
-                  {
-                    id: "excludes",
-                    title: "Price Excludes",
-                    icon: XCircleIcon,
-                  },
-                ].map((section, index, arr) => (
+              <div className="space-y-4">
+                {itineraries.map((item) => (
                   <div
-                    key={section.id}
-                    className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-blue-200 transition-all duration-200 ${
-                      activeSection === section.id
-                        ? "bg-blue-100 text-blue-600"
-                        : ""
-                    } ${
-                      index < arr.length - 1 ? "border-b border-gray-200" : ""
-                    }`}
-                    onClick={() => scrollToSection(section.id)}
-                    aria-label={`Navigate to ${section.title}`}
+                    key={item.day}
+                    className="group cursor-pointer"
+                    onClick={() => toggleDay(item.day)}
                   >
-                    <section.icon className="h-5 w-5 mr-2" />
-                    <span className="text-[18px] font-medium text-gray-800">
-                      {section.title}
-                    </span>
+                    <div className="flex items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-300">
+                      <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                        <span className="text-green-600 font-bold">
+                          {item.day}
+                        </span>
+                      </div>
+                      <div className="flex-grow">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-500 text-sm">Day {item.day}</p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        {expandedDays[item.day] ? (
+                          <ChevronUpIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
+                        ) : (
+                          <ChevronDownIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
+                        )}
+                      </div>
+                    </div>
+                    {expandedDays[item.day] && (
+                      <div className="mt-2 ml-16 p-4 bg-green-50 rounded-lg border-l-4 border-green-200">
+                        <p className="text-gray-700 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
-              </nav>
+              </div>
+            </section>
+
+            {/* Map Section - Full width, no box */}
+            <section id="map" ref={sectionRefs.current.map} className="mb-16">
+              <div className="border-l-4 border-orange-500 pl-8 mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                  Route Map
+                </h2>
+              </div>
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                <img
+                  src="/icons/map-placeholder.png"
+                  alt="Trekking Route Map"
+                  className="w-full min-h-[500px] object-cover"
+                />
+                <div className="absolute top-6 left-6 bg-orange-500 text-white px-6 py-3 rounded-full shadow-lg font-semibold">
+                  📍 Trekking Route
+                </div>
+              </div>
+            </section>
+
+            {/* Packing List - Grid style */}
+            <section
+              id="packing"
+              ref={sectionRefs.current.packing}
+              className="mb-16"
+            >
+              <div className="border-l-4 border-blue-500 pl-8 mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                  Packing Checklist
+                </h2>
+                <p className="text-gray-600">
+                  Click to expand categories and check off items as you pack
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {packingList.map((item) => (
+                  <div
+                    key={item.category}
+                    className={`cursor-pointer transition-all duration-300 ${
+                      checkedItems[item.category]
+                        ? "bg-green-100 border-green-300"
+                        : "bg-white hover:bg-blue-50 border-gray-200"
+                    } border-2 rounded-xl p-6 shadow-sm hover:shadow-md`}
+                    onClick={() => togglePacking(item.category)}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center cursor-pointer ${
+                            checkedItems[item.category]
+                              ? "bg-green-500 text-white"
+                              : "bg-gray-200 text-gray-500"
+                          }`}
+                          onClick={(e) => toggleCheckbox(item.category, e)}
+                        >
+                          {checkedItems[item.category] ? "✓" : "○"}
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {item.category}
+                        </h3>
+                      </div>
+                      {expandedPacking[item.category] ? (
+                        <ChevronUpIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </div>
+                    {expandedPacking[item.category] && (
+                      <ul className="space-y-2 text-gray-600">
+                        {item.items.map((subItem, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                            {subItem}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Includes/Excludes - Side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+              <section id="includes" ref={sectionRefs.current.includes}>
+                <div className="h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                      <CheckCircleIcon className="h-6 w-6 text-green-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      What's Included
+                    </h2>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      "Accommodation in standard hotels and teahouses",
+                      "All meals during trekking",
+                      "Experienced English-speaking guide",
+                      "Porter services",
+                      "Trekking permits and fees",
+                      "Domestic flights",
+                      "First aid kit and emergency oxygen",
+                      "Ground transportation",
+                    ].map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 p-3 bg-green-50 rounded-lg"
+                      >
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section id="excludes" ref={sectionRefs.current.excludes}>
+                <div className="h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                      <XCircleIcon className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      Not Included
+                    </h2>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      "Meals in Kathmandu",
+                      "International flights",
+                      "Nepal Entry Visa",
+                      "Travel insurance",
+                      "Beverages and bottled water",
+                      "Tips for staff",
+                      "Personal gear",
+                    ].map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 p-3 bg-red-50 rounded-lg"
+                      >
+                        <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          {/* Right Sidebar - Enhanced */}
+          <div className="lg:w-1/3">
+            <div className="sticky top-[80px]">
+              {/* Booking Card */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg mb-8 border border-blue-200">
+                <div className="text-center mb-6">
+                  <p className="text-sm text-gray-600 mb-2">Starting from</p>
+                  <p className="text-4xl font-bold text-blue-600 mb-1">
+                    ${pkg.price || "N/A"}
+                  </p>
+                  <p className="text-sm text-gray-600">per person</p>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <Link
+                    to={`/booking?package=${pkg.id}`}
+                    className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-4 rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                  >
+                    📅 Book This Trek
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className="block w-full bg-white hover:bg-gray-50 text-blue-600 text-center py-3 rounded-xl font-semibold border-2 border-blue-600 transition-all duration-200"
+                  >
+                    💬 Ask Questions
+                  </Link>
+                </div>
+
+                <div className="text-center text-sm text-gray-600">
+                  <p>✅ Free cancellation up to 24 hours</p>
+                  <p>✅ Best price guarantee</p>
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                  <h3 className="font-semibold text-gray-800">
+                    Quick Navigation
+                  </h3>
+                </div>
+                <nav className="p-2">
+                  {[
+                    {
+                      id: "overview",
+                      title: "Overview",
+                      icon: "📋",
+                      color: "blue",
+                    },
+                    {
+                      id: "itinerary",
+                      title: "Daily Plan",
+                      icon: "🗓️",
+                      color: "green",
+                    },
+                    {
+                      id: "map",
+                      title: "Route Map",
+                      icon: "🗺️",
+                      color: "orange",
+                    },
+                    {
+                      id: "packing",
+                      title: "Packing List",
+                      icon: "🎒",
+                      color: "blue",
+                    },
+                    {
+                      id: "includes",
+                      title: "What's Included",
+                      icon: "✅",
+                      color: "green",
+                    },
+                    {
+                      id: "excludes",
+                      title: "Not Included",
+                      icon: "❌",
+                      color: "red",
+                    },
+                  ].map((section) => (
+                    <div
+                      key={section.id}
+                      className={`flex items-center gap-3 p-3 cursor-pointer rounded-lg transition-all duration-200 ${
+                        activeSection === section.id
+                          ? `bg-${section.color}-100 text-${section.color}-700`
+                          : "hover:bg-gray-50"
+                      }`}
+                      onClick={() => scrollToSection(section.id)}
+                    >
+                      <span className="text-lg">{section.icon}</span>
+                      <span className="font-medium">{section.title}</span>
+                    </div>
+                  ))}
+                </nav>
+              </div>
             </div>
           </div>
         </div>
