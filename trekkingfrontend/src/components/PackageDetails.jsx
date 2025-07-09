@@ -312,7 +312,7 @@ const PackageDetails = () => {
 
               {/* Title overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className=" mx-auto px-4 sm:px-6 lg:px-8">
                   <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
                     {pkg.title || "Unnamed Package"}
                   </h1>
@@ -360,7 +360,7 @@ const PackageDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left Section */}
           <div className="lg:w-2/3">
@@ -423,7 +423,7 @@ const PackageDetails = () => {
                       </div>
                     </div>
                     {expandedDays[item.day] && (
-                      <div className="mt-2 ml-16 p-4 bg-green-50 rounded-lg border-l-4 border-green-200">
+                      <div className="mt-2  p-4 bg-green-50 rounded-lg border-l-4 border-green-200">
                         <p className="text-gray-700 leading-relaxed">
                           {item.description}
                         </p>
