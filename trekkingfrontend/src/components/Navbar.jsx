@@ -218,7 +218,7 @@ const Navbar = () => {
             className={`lg:hidden p-2 rounded-lg transition-colors duration-300 ${
               isScrolled
                 ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
-                : "text-white/90 hover:text-white hover:bg-white/10"
+                : "text-neutral-950 hover:text-white hover:bg-white/90"
             }`}
           >
             <AnimatePresence mode="wait">
