@@ -2,9 +2,12 @@ import {
   ArrowsUpDownIcon,
   BookmarkIcon,
   CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
   FunnelIcon,
+  MagnifyingGlassIcon,
   MapPinIcon,
   SparklesIcon,
   XMarkIcon,
@@ -27,6 +30,9 @@ const PackageList = () => {
   const [duration, setDuration] = useState(100);
   const [priceRange, setPriceRange] = useState(10000);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const packagesPerPage = 10;
+
   useEffect(() => {
     const fetchPackages = async () => {
       try {
@@ -46,6 +52,11 @@ const PackageList = () => {
 
     fetchPackages();
   }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, sortBy, region, difficulty, duration, priceRange]);
 
   const sortPackages = (packagesToSort) => {
     if (!Array.isArray(packagesToSort) || packagesToSort.length === 0) {
@@ -122,7 +133,13 @@ const PackageList = () => {
     });
   };
 
-  const displayPackages = sortPackages(filterPackages());
+  const filteredPackages = sortPackages(filterPackages());
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredPackages.length / packagesPerPage);
+  const startIndex = (currentPage - 1) * packagesPerPage;
+  const endIndex = startIndex + packagesPerPage;
+  const displayPackages = filteredPackages.slice(startIndex, endIndex);
 
   const isFilterApplied = () => {
     return (
@@ -139,6 +156,7 @@ const PackageList = () => {
     setDuration(100);
     setPriceRange(10000);
     setSearch("");
+    setCurrentPage(1);
   };
 
   const sliderSettings = {
@@ -191,270 +209,454 @@ const PackageList = () => {
     return difficulty || "N/A";
   };
 
-  return (
-    <div className="mx-auto p-4 bg-[#F6FFFF] text-black font-inter">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <h1 className="text-5xl font-bold mb-4 sm:mb-0">Trekking Packages</h1>
-        <div className="flex flex-col sm:flex-row gap-12 items-center">
-          <div className="flex flex-col w-full sm:w-64">
-            <input
-              type="text"
-              placeholder="Search packages..."
-              className="p-3 text-l font-medium border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-row w-full sm:w-64">
-            <label className="text-m font-medium mb-1 flex items-center">
-              <ArrowsUpDownIcon className="h-5 w-5 mr-2" />
-              Sort By
-            </label>
-            <select
-              className="p-3 text-l font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+  // Pagination component
+  const Pagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex items-center justify-center space-x-2 mt-8">
+        {/* Previous Button */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            currentPage === 1
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          <ChevronLeftIcon className="h-4 w-4 mr-1" />
+          Previous
+        </button>
+
+        {/* Page Numbers */}
+        {startPage > 1 && (
+          <>
+            <button
+              onClick={() => setCurrentPage(1)}
+              className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
-              <option value="latest">Latest</option>
-              <option value="price-high">Price (High to Low)</option>
-              <option value="price-low">Price (Low to High)</option>
-              <option value="duration-short">Duration (Short to Long)</option>
-              <option value="duration-long">Duration (Long to Short)</option>
-              <option value="difficulty-easy">Difficulty (Easy to Hard)</option>
-              <option value="difficulty-hard">Difficulty (Hard to Easy)</option>
-            </select>
-          </div>
+              1
+            </button>
+            {startPage > 2 && (
+              <span className="px-2 py-2 text-gray-400">...</span>
+            )}
+          </>
+        )}
+
+        {pageNumbers.map((number) => (
           <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="px-4 py-3 text-[18px] font-medium border rounded-lg border-neutral-300  text-neutral-700 hover:bg-neutral-50 flex items-center"
+            key={number}
+            onClick={() => setCurrentPage(number)}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              currentPage === number
+                ? "bg-blue-600 text-white"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
           >
-            <FunnelIcon className="h-5 w-5 mr-2" />
-            Filter
+            {number}
           </button>
+        ))}
+
+        {endPage < totalPages && (
+          <>
+            {endPage < totalPages - 1 && (
+              <span className="px-2 py-2 text-gray-400">...</span>
+            )}
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              {totalPages}
+            </button>
+          </>
+        )}
+
+        {/* Next Button */}
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            currentPage === totalPages
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          Next
+          <ChevronRightIcon className="h-4 w-4 ml-1" />
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">
+              Discover Your Perfect Trek
+            </h1>
+            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
+              Explore the majestic Himalayas with our carefully curated trekking
+              packages
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Filter Section */}
-      {showFilters && (
-        <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="flex flex-col">
-              <label className="text-[18px] font-medium mb-1 flex items-center">
-                <MapPinIcon className="h-5 w-5 mr-2" />
-                Region
-              </label>
-              <select
-                className="p-3 text-[16px] font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              >
-                <option value="All Regions">All Regions</option>
-                <option value="Everest">Everest</option>
-                <option value="Annapurna">Annapurna</option>
-                <option value="Langtang">Langtang</option>
-                <option value="Manaslu">Manaslu</option>
-                <option value="Mustang">Mustang</option>
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[18px] font-medium mb-1 flex items-center">
-                <SparklesIcon className="h-5 w-5 mr-2" />
-                Difficulty
-              </label>
-              <select
-                className="p-3 text-[16px] font-medium border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-              >
-                <option value="All Levels">All Levels</option>
-                <option value="EASY">Easy</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="TOUGH">Tough</option>
-                <option value="VERY_TOUGH">Very Tough</option>
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[18px] font-medium mb-1 flex items-center">
-                <CalendarIcon className="h-5 w-5 mr-2" />
-                Duration (days)
-              </label>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search and Filter Bar */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 -mt-8 relative z-10">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            {/* Search */}
+            <div className="relative flex-1 max-w-md">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
-                type="range"
-                min="1"
-                max="100"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full"
+                type="text"
+                placeholder="Search amazing treks..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              <p className="text-[16px] font-medium mt-2">
-                Up to {duration} days
-              </p>
             </div>
-            <div className="flex flex-col">
-              <label className="text-[18px] font-medium mb-1 flex items-center">
-                <CurrencyDollarIcon className="h-5 w-5 mr-2" />
-                Price Range
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="10000"
-                step="100"
-                value={priceRange}
-                onChange={(e) => setPriceRange(Number(e.target.value))}
-                className="w-full"
-              />
-              <p className="text-[16px] font-medium mt-2">
-                Up to ${priceRange}
-              </p>
-            </div>
-          </div>
-          {isFilterApplied() && (
-            <button
-              onClick={clearFilters}
-              className="mt-4 p-2 bg-gray-200 text-black text-[16px] font-medium rounded-lg hover:bg-gray-300 flex items-center"
-            >
-              <XMarkIcon className="h-5 w-5 mr-2" />
-              Clear Filters
-            </button>
-          )}
-        </div>
-      )}
 
-      {error && (
-        <p className="text-[24px] font-medium text-red-500 mb-4">{error}</p>
-      )}
-      {isLoading && (
-        <div className="text-[24px] font-medium text-center py-4">
-          Loading packages...
-        </div>
-      )}
-      {!isLoading && displayPackages.length === 0 && (
-        <div className="text-[24px] font-medium text-center py-4 flex flex-col items-center">
-          <ExclamationCircleIcon className="h-12 w-12 text-gray-500 mb-2" />
-          No matching packages found.
-          <button
-            onClick={clearFilters}
-            className="mt-4 p-2 bg-blue-500 text-white text-[18px] font-medium rounded-lg hover:bg-blue-600 flex items-center"
-          >
-            <XMarkIcon className="h-5 w-5 mr-2" />
-            Clear All Filters
-          </button>
-        </div>
-      )}
-      <div className="space-y-6">
-        {displayPackages.map((pkg) => (
-          <div
-            key={pkg.id}
-            className="border rounded-lg p-6 flex flex-col md:flex-row gap-6 bg-white shadow-md"
-          >
-            <div className="md:w-1/4 w-full flex flex-col">
-              {pkg.images && pkg.images.length > 0 ? (
-                pkg.images.length === 1 ? (
-                  <div className="relative flex-1">
-                    <img
-                      src={pkg.images[0].image}
-                      alt={pkg.images[0].alt_text || pkg.title}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
-                ) : (
-                  <div className="relative flex-1">
-                    <Slider {...sliderSettings}>
-                      {pkg.images.map((img) => (
-                        <div key={img.id}>
-                          <img
-                            src={img.image}
-                            alt={img.alt_text || pkg.title}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        </div>
-                      ))}
-                    </Slider>
-                  </div>
-                )
-              ) : (
-                <p className="text-[24px] font-medium text-gray-500 flex-1">
-                  No images available.
-                </p>
+            {/* Sort */}
+            <div className="flex items-center gap-2">
+              <ArrowsUpDownIcon className="h-5 w-5 text-gray-500" />
+              <select
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="latest">Latest</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="duration-short">Duration: Short to Long</option>
+                <option value="duration-long">Duration: Long to Short</option>
+                <option value="difficulty-easy">
+                  Difficulty: Easy to Hard
+                </option>
+                <option value="difficulty-hard">
+                  Difficulty: Hard to Easy
+                </option>
+              </select>
+            </div>
+
+            {/* Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all ${
+                showFilters || isFilterApplied()
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              <FunnelIcon className="h-5 w-5" />
+              Filters
+              {isFilterApplied() && (
+                <span className="bg-white text-blue-600 px-2 py-1 rounded-full text-xs">
+                  {
+                    [
+                      region !== "All Regions" && "Region",
+                      difficulty !== "All Levels" && "Difficulty",
+                      duration < 100 && "Duration",
+                      priceRange < 10000 && "Price",
+                    ].filter(Boolean).length
+                  }
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Expandable Filters */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Region Filter */}
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <MapPinIcon className="h-4 w-4 mr-2" />
+                    Region
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                  >
+                    <option value="All Regions">All Regions</option>
+                    <option value="Everest">Everest</option>
+                    <option value="Annapurna">Annapurna</option>
+                    <option value="Langtang">Langtang</option>
+                    <option value="Manaslu">Manaslu</option>
+                    <option value="Mustang">Mustang</option>
+                  </select>
+                </div>
+
+                {/* Difficulty Filter */}
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    Difficulty
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                  >
+                    <option value="All Levels">All Levels</option>
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="TOUGH">Tough</option>
+                    <option value="VERY_TOUGH">Very Tough</option>
+                  </select>
+                </div>
+
+                {/* Duration Filter */}
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    Duration
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={duration}
+                    onChange={(e) => setDuration(Number(e.target.value))}
+                    className="w-full accent-blue-600"
+                  />
+                  <p className="text-sm text-gray-600 mt-1">
+                    Up to {duration} days
+                  </p>
+                </div>
+
+                {/* Price Filter */}
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <CurrencyDollarIcon className="h-4 w-4 mr-2" />
+                    Max Price
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10000"
+                    step="100"
+                    value={priceRange}
+                    onChange={(e) => setPriceRange(Number(e.target.value))}
+                    className="w-full accent-blue-600"
+                  />
+                  <p className="text-sm text-gray-600 mt-1">
+                    Up to ${priceRange}
+                  </p>
+                </div>
+              </div>
+
+              {isFilterApplied() && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                    Clear All Filters
+                  </button>
+                </div>
               )}
             </div>
-            <div className="flex-1">
-              <h2 className="text-[32px] font-bold mb-2">
-                {pkg.title || "Unnamed Package"}
-              </h2>
-              <p className="text-[24px] font-medium mb-4 line-clamp-3">
-                {pkg.description || "No description available."}
+          )}
+        </div>
+
+        {/* Results Count and Pagination Info */}
+        {!isLoading && (
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <p className="text-gray-600">
+              Showing {startIndex + 1}-
+              {Math.min(endIndex, filteredPackages.length)} of{" "}
+              {filteredPackages.length} packages
+            </p>
+            {totalPages > 1 && (
+              <p className="text-sm text-gray-500">
+                Page {currentPage} of {totalPages}
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
-                <div className="flex items-center">
-                  <img
-                    src="/icons/calendar.png"
-                    alt="Calendar"
-                    className="h-6 w-6 mr-2"
-                  />
-                  <p className="text-[24px] font-medium">
-                    {pkg.duration || "N/A"} days
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <img
-                    src="/icons/dollar.png"
-                    alt="Price"
-                    className="h-6 w-6 mr-2"
-                  />
-                  <p className="text-[24px] font-medium">
-                    ${pkg.price || "N/A"}
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <img
-                    src="/icons/mountain_peak.png"
-                    alt="Altitude"
-                    className="h-6 w-6 mr-2"
-                  />
-                  <p className="text-[24px] font-medium">
-                    {pkg.altitude || "N/A"}m
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <img
-                    src="/icons/difficulty.png"
-                    alt="Difficulty"
-                    className="h-6 w-6 mr-2"
-                  />
-                  <p
-                    className={`text-[24px] font-medium ${getDifficultyColor(
-                      pkg.difficulty
-                    )}`}
+            )}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading amazing treks...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <p className="text-red-600 font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* No Results */}
+        {!isLoading && filteredPackages.length === 0 && !error && (
+          <div className="text-center py-12">
+            <ExclamationCircleIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No treks found
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Try adjusting your search criteria or clear the filters
+            </p>
+            <button
+              onClick={clearFilters}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 mx-auto"
+            >
+              <XMarkIcon className="h-5 w-5" />
+              Clear All Filters
+            </button>
+          </div>
+        )}
+
+        {/* Package List - Full Width Cards */}
+        <div className="space-y-6">
+          {displayPackages.map((pkg) => (
+            <div
+              key={pkg.id}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <div className="flex flex-col lg:flex-row">
+                {/* Image Section */}
+                <div className="lg:w-1/3 h-64 lg:h-auto relative">
+                  {pkg.images && pkg.images.length > 0 ? (
+                    pkg.images.length === 1 ? (
+                      <img
+                        src={pkg.images[0].image}
+                        alt={pkg.images[0].alt_text || pkg.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Slider {...sliderSettings}>
+                        {pkg.images.map((img) => (
+                          <div key={img.id}>
+                            <img
+                              src={img.image}
+                              alt={img.alt_text || pkg.title}
+                              className="w-full h-64 lg:h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    )
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <p className="text-gray-500">No image available</p>
+                    </div>
+                  )}
+
+                  {/* Bookmark Button */}
+                  <button
+                    onClick={() => handleBookmark(pkg.id)}
+                    className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
                   >
-                    {formatDifficulty(pkg.difficulty)}
-                  </p>
+                    <BookmarkIcon className="h-5 w-5 text-gray-700" />
+                  </button>
                 </div>
-              </div>
-              <div className="flex gap-4">
-                <Link
-                  to="/booking"
-                  className="p-2 bg-blue-500 text-white text-[24px] font-medium rounded-lg hover:bg-blue-600"
-                >
-                  Book Now
-                </Link>
-                <Link
-                  to={`/packages/${pkg.id}`}
-                  className="p-2 bg-gray-200 text-black text-[24px] font-medium rounded-lg hover:bg-gray-300"
-                >
-                  Learn More
-                </Link>
-                <button
-                  onClick={() => handleBookmark(pkg.id)}
-                  className="p-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300"
-                >
-                  <BookmarkIcon className="h-6 w-6" />
-                </button>
+
+                {/* Content Section */}
+                <div className="lg:w-2/3 p-6 lg:p-8">
+                  <div className="flex flex-col h-full">
+                    <div className="flex-grow">
+                      <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                        {pkg.title || "Unnamed Package"}
+                      </h3>
+
+                      <p className="text-gray-600 mb-6 text-lg leading-relaxed line-clamp-3">
+                        {pkg.description || "No description available."}
+                      </p>
+
+                      {/* Stats Grid - Updated to include price and remove region */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div className="text-center">
+                          <CalendarIcon className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                          <p className="text-lg font-semibold text-gray-900">
+                            {pkg.duration || "N/A"}
+                          </p>
+                          <p className="text-sm text-gray-500">days</p>
+                        </div>
+                        <div className="text-center">
+                          <CurrencyDollarIcon className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                          <p className="text-lg font-semibold text-blue-600">
+                            ${pkg.price || "N/A"}
+                          </p>
+                          <p className="text-sm text-gray-500">price</p>
+                        </div>
+                        <div className="text-center">
+                          <img
+                            src="/icons/mountain_peak.png"
+                            alt="Altitude"
+                            className="h-6 w-6 mx-auto mb-2"
+                          />
+                          <p className="text-lg font-semibold text-gray-900">
+                            {pkg.altitude || "N/A"}m
+                          </p>
+                          <p className="text-sm text-gray-500">altitude</p>
+                        </div>
+                        <div className="text-center">
+                          <SparklesIcon className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                          <p
+                            className={`text-lg font-semibold ${getDifficultyColor(
+                              pkg.difficulty
+                            )}`}
+                          >
+                            {formatDifficulty(pkg.difficulty)}
+                          </p>
+                          <p className="text-sm text-gray-500">difficulty</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 mt-auto">
+                      <Link
+                        to={`/booking?package=${pkg.id}`}
+                        className="flex-1 bg-blue-600 text-white text-center py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+                      >
+                        Book Now
+                      </Link>
+                      <Link
+                        to={`/packages/${pkg.id}`}
+                        className="flex-1 bg-gray-100 text-gray-700 text-center py-4 rounded-xl font-semibold text-lg hover:bg-gray-200 transition-colors border border-gray-200"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        {/* Pagination */}
+        <Pagination />
       </div>
     </div>
   );
