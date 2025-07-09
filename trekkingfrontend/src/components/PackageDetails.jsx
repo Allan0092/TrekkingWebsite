@@ -185,7 +185,7 @@ const PackageDetails = () => {
   const packingList = [
     {
       category: "General",
-      icon: "general-pk",
+      icon: "🎒", // Backpack emoji
       items: [
         "Backpack (40-60L)",
         "Trekking poles",
@@ -195,7 +195,7 @@ const PackageDetails = () => {
     },
     {
       category: "Upper Body",
-      icon: "upperbody-pk",
+      icon: "👕", // T-shirt emoji
       items: [
         "Fleece jacket",
         "Waterproof/windproof jacket",
@@ -205,7 +205,7 @@ const PackageDetails = () => {
     },
     {
       category: "Torso",
-      icon: "torso-pk",
+      icon: "🧥", // Coat emoji
       items: [
         "Insulated jacket (down or synthetic)",
         "Lightweight pullover",
@@ -214,7 +214,7 @@ const PackageDetails = () => {
     },
     {
       category: "Lower Body",
-      icon: "lowerbody-pk",
+      icon: "👖", // Jeans emoji
       items: [
         "Trekking pants",
         "Waterproof pants",
@@ -224,7 +224,7 @@ const PackageDetails = () => {
     },
     {
       category: "Hands",
-      icon: "hands-pk",
+      icon: "🧤", // Gloves emoji
       items: [
         "Lightweight gloves",
         "Insulated gloves",
@@ -233,7 +233,7 @@ const PackageDetails = () => {
     },
     {
       category: "Feet",
-      icon: "feet-pk",
+      icon: "👢", // Boot emoji
       items: [
         "Hiking boots (broken-in)",
         "Camp shoes or sandals",
@@ -243,7 +243,7 @@ const PackageDetails = () => {
     },
     {
       category: "Undergarments",
-      icon: "undergarments-pk",
+      icon: "🩲", // Underwear emoji
       items: [
         "Moisture-wicking underwear",
         "Thermal underwear",
@@ -252,7 +252,7 @@ const PackageDetails = () => {
     },
     {
       category: "First Aid Kits and Medications",
-      icon: "firstaid-pk",
+      icon: "🏥", // Hospital emoji
       items: [
         "Personal medications",
         "Bandages and antiseptic",
@@ -262,7 +262,7 @@ const PackageDetails = () => {
     },
     {
       category: "Other Essentials",
-      icon: "otheressensials-pk",
+      icon: "☀️", // Sun emoji
       items: [
         "Sunglasses (UV protection)",
         "Sunscreen (SPF 50+)",
@@ -489,6 +489,10 @@ const PackageDetails = () => {
                           onClick={(e) => toggleCheckbox(item.category, e)}
                         >
                           {checkedItems[item.category] ? "✓" : "○"}
+                        </div>
+                        {/* Add icon here */}
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xl">{item.icon}</span>
                         </div>
                         <h3 className="text-lg font-semibold text-gray-800">
                           {item.category}
