@@ -41,17 +41,13 @@ const Booking = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get package ID from URL parameters
   const [searchParams] = useSearchParams();
   const location = useLocation();
 
-  // Extract package ID from URL parameters or pathname
   const getPackageId = () => {
-    // First try to get from ?package= parameter
     const packageParam = searchParams.get("package");
     if (packageParam) return packageParam;
 
-    // Then try to extract from pathname if it's like /booking/7
     const pathParts = location.pathname.split("/");
     const lastPart = pathParts[pathParts.length - 1];
     if (lastPart && !isNaN(lastPart)) return lastPart;
@@ -88,7 +84,6 @@ const Booking = () => {
         const data = await response.json();
         console.log("Fetched package:", data);
 
-        // Ensure price is a number
         const processedPackage = {
           ...data,
           price: parseFloat(data.price) || 0,
@@ -131,7 +126,6 @@ const Booking = () => {
       return newPeople;
     });
 
-    // Reset to first person if current index is out of bounds
     if (currentPersonIndex >= numPeople) {
       setCurrentPersonIndex(0);
     }
@@ -305,25 +299,42 @@ const Booking = () => {
   };
 
   const calculatePrice = () => {
-    if (!pkg) return { items: [], total: 0 };
+    if (!pkg) return { items: [], subtotal: 0, discount: 0, total: 0 };
 
     const basePrice = pkg.price || 0;
     const items = [];
-    let total = 0;
+    let subtotal = 0;
 
     // Base price per person
-    people.forEach((_, i) => {
-      items.push({ name: `Base Price (Person ${i + 1})`, cost: basePrice });
-      total += basePrice;
+    people.forEach((person, i) => {
+      if (person.fullName) {
+        // Only count if person has a name
+        items.push({
+          category: "Package",
+          name: `${pkg.title} - Person ${i + 1}`,
+          quantity: 1,
+          unitPrice: basePrice,
+          cost: basePrice,
+        });
+        subtotal += basePrice;
+      }
     });
 
     // Room costs - avoid double charging for shared rooms
     const processedSharedRooms = new Set();
 
     people.forEach((person, i) => {
+      if (!person.fullName) return; // Skip if person doesn't have a name
+
       if (person.room === "Single") {
-        items.push({ name: `Single Room (Person ${i + 1})`, cost: 100 });
-        total += 100;
+        items.push({
+          category: "Accommodation",
+          name: `Single Room - Person ${i + 1}`,
+          quantity: 1,
+          unitPrice: 100,
+          cost: 100,
+        });
+        subtotal += 100;
       } else if (person.room === "Shared" && person.shareRoomWith) {
         // Create a unique key for the shared room pair
         const roomKey = [person.fullName, person.shareRoomWith]
@@ -332,16 +343,30 @@ const Booking = () => {
 
         if (!processedSharedRooms.has(roomKey)) {
           items.push({
+            category: "Accommodation",
             name: `Shared Room (${person.fullName} & ${person.shareRoomWith})`,
+            quantity: 1,
+            unitPrice: 120,
             cost: 120,
           });
-          total += 120;
+          subtotal += 120;
           processedSharedRooms.add(roomKey);
         }
       }
     });
 
-    return { items, total };
+    // Calculate 10% discount
+    const discountPercentage = 10;
+    const discountAmount = (subtotal * discountPercentage) / 100;
+    const finalTotal = subtotal - discountAmount;
+
+    return {
+      items,
+      subtotal: Math.round(subtotal * 100) / 100,
+      discountPercentage,
+      discount: Math.round(discountAmount * 100) / 100,
+      total: Math.round(finalTotal * 100) / 100,
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -922,26 +947,135 @@ const Booking = () => {
 
           {/* Price Summary */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <DollarSign className="h-6 w-6 mr-2 text-green-600" />
               Price Summary
             </h2>
-            <div className="space-y-3">
-              {priceData.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center py-2 border-b border-gray-100"
-                >
-                  <span className="text-gray-700">{item.name}</span>
-                  <span className="font-semibold">${item.cost}</span>
+
+            {priceData.items.length > 0 ? (
+              <div className="space-y-6">
+                {/* Items Table */}
+                <div className="overflow-hidden border border-gray-200 rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Item
+                        </th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Qty
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Unit Price
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {priceData.items.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-4 py-4">
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium text-gray-900">
+                                {item.name}
+                              </span>
+                              <span className="text-xs text-gray-500 capitalize">
+                                {item.category}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 text-center text-sm text-gray-700">
+                            {item.quantity}
+                          </td>
+                          <td className="px-4 py-4 text-right text-sm text-gray-700">
+                            ${item.unitPrice}
+                          </td>
+                          <td className="px-4 py-4 text-right text-sm font-medium text-gray-900">
+                            ${item.cost}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
-              <div className="flex justify-between items-center pt-4 border-t-2 border-gray-200">
-                <span className="text-xl font-bold text-gray-800">Total</span>
-                <span className="text-2xl font-bold text-blue-600">
-                  ${priceData.total}
-                </span>
+
+                {/* Summary Calculations */}
+                <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+                  <div className="flex justify-between items-center text-gray-700">
+                    <span className="text-base">Subtotal</span>
+                    <span className="text-lg font-medium">
+                      ${priceData.subtotal}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center text-green-600">
+                    <span className="text-base flex items-center">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+                        {priceData.discountPercentage}% OFF
+                      </span>
+                      Discount
+                    </span>
+                    <span className="text-lg font-medium">
+                      -${priceData.discount}
+                    </span>
+                  </div>
+
+                  <div className="border-t border-gray-300 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xl font-bold text-gray-800">
+                        Final Total
+                      </span>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-blue-600">
+                          ${priceData.total}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          You save ${priceData.discount}!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Info */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="h-5 w-5 text-blue-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-blue-800">
+                          Special Offer Applied!
+                        </h4>
+                        <p className="text-sm text-blue-700">
+                          Limited time {priceData.discountPercentage}% discount
+                          on all packages. Book now to secure this amazing deal!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <DollarSign className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>Add travelers to see pricing details</p>
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -958,30 +1092,73 @@ const Booking = () => {
         {/* Confirmation Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">
                 Confirm Your Booking
               </h3>
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
+
+              {/* Booking Details */}
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600">Package:</span>
-                  <span className="font-semibold">{pkg.title}</span>
+                  <span className="font-semibold text-right max-w-xs truncate">
+                    {pkg.title}
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">People:</span>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Number of People:</span>
                   <span className="font-semibold">{numPeople}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total:</span>
-                  <span className="font-bold text-blue-600">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Subtotal:</span>
+                  <span className="font-semibold">${priceData.subtotal}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">
+                    Discount ({priceData.discountPercentage}%):
+                  </span>
+                  <span className="font-semibold text-green-600">
+                    -${priceData.discount}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
+                  <span className="text-lg font-bold text-gray-800">
+                    Final Total:
+                  </span>
+                  <span className="text-xl font-bold text-blue-600">
                     ${priceData.total}
                   </span>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm mb-6">
-                A confirmation email will be sent to your provided email address
-                within 24 hours.
-              </p>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-yellow-800">
+                      Important Notice
+                    </h4>
+                    <p className="text-sm text-yellow-700">
+                      A confirmation email will be sent to your provided email
+                      address within 24 hours. Please review all details
+                      carefully before confirming.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex space-x-4">
                 <button
                   onClick={() => setShowModal(false)}

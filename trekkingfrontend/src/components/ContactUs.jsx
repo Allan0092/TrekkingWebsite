@@ -255,14 +255,23 @@ const ContactUs = () => {
 
             {/* Placeholder for Google Maps */}
             <div className="bg-neutral-200 rounded-lg h-96 flex items-center justify-center">
-              <div className="text-center">
+              {/* <div className="text-center">
                 <MapPin className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
                 <p className="text-neutral-600">
                   Interactive map would be embedded here
                   <br />
                   showing our office location in Thamel, Kathmandu
                 </p>
-              </div>
+              </div> */}
+              <iframe
+                width="450"
+                height="250"
+                frameborder="0"
+                style={{ border: 0 }}
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/MAP_MODE?key=YOUR_API_KEY&q=Himalaya+Fair+Reisen,Hide+and+Seek+colony,+Kathmandu+44600"
+                allowfullscreen
+              ></iframe>
             </div>
           </div>
         </div>
