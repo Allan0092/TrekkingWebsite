@@ -10,6 +10,7 @@ const NotFound = () => {
     "/images/ice-spikes.JPG",
     "/images/black-yak.jpeg",
     "/images/bridge.jpeg",
+    "/images/bridge2.jpeg",
   ];
 
   useEffect(() => {

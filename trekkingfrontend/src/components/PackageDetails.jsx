@@ -88,6 +88,13 @@ const PackageDetails = () => {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const toggleDay = (day) => {
     setExpandedDays((prev) => ({
       ...prev,
@@ -404,7 +411,7 @@ const PackageDetails = () => {
                   >
                     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-300 overflow-hidden">
                       <div className="flex items-center p-6">
-                        <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex flex-col items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                        <div className="flex-shrink-0 w-16 h-16 border-2 border-black rounded-full flex flex-col items-center justify-center mr-4 transition-colors">
                           {/* Icon */}
                           {item.icon && (
                             <img
@@ -414,7 +421,7 @@ const PackageDetails = () => {
                             />
                           )}
                           {/* Day number */}
-                          <span className="text-green-600 font-bold text-xs">
+                          <span className="text-black font-bold text-xs">
                             Day {item.day}
                           </span>
                         </div>
@@ -422,9 +429,6 @@ const PackageDetails = () => {
                           <h3 className="text-xl font-semibold text-gray-800 mb-1">
                             {item.title}
                           </h3>
-                          <p className="text-gray-500 text-sm">
-                            Day {item.day}
-                          </p>
                         </div>
                         <div className="flex-shrink-0">
                           {expandedDays[item.day] ? (
@@ -647,6 +651,13 @@ const PackageDetails = () => {
                 <nav className="p-2">
                   {[
                     {
+                      id: "top",
+                      title: "Top",
+                      icon: "⬆️",
+                      color: "gray",
+                      action: scrollToTop,
+                    },
+                    {
                       id: "overview",
                       title: "Overview",
                       icon: "📋",
@@ -686,11 +697,17 @@ const PackageDetails = () => {
                     <div
                       key={section.id}
                       className={`flex items-center gap-3 p-3 cursor-pointer rounded-lg transition-all duration-200 ${
-                        activeSection === section.id
+                        activeSection === section.id && section.id !== "top"
                           ? `bg-${section.color}-100 text-${section.color}-700`
                           : "hover:bg-gray-50"
                       }`}
-                      onClick={() => scrollToSection(section.id)}
+                      onClick={() => {
+                        if (section.action) {
+                          section.action();
+                        } else {
+                          scrollToSection(section.id);
+                        }
+                      }}
                     >
                       <span className="text-lg">{section.icon}</span>
                       <span className="font-medium">{section.title}</span>
