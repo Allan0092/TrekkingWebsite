@@ -211,12 +211,19 @@ const SignUp = () => {
 
     try {
       const submitData = {
-        ...formData,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirm_password,
+        full_name: formData.full_name,
+        gender: formData.gender,
+        country: formData.country,
+        date_of_birth: formData.date_of_birth,
+        phone: formData.phone,
         subscribe_newsletter: checkboxes.newsletter,
         receive_offers: checkboxes.offers,
       };
 
-      await axios.post("http://localhost:8000/api/register/", submitData);
+      await axios.post("http://localhost:8000/api/auth/register/", submitData);
       alert(
         "Registration successful! Please check your email for verification."
       );

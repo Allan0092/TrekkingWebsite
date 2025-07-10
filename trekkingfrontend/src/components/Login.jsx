@@ -13,8 +13,7 @@ const Login = () => {
     setError("");
 
     try {
-      // Simulated API call - replace with your actual axios call
-      const response = await fetch("http://localhost:8000/api/login/", {
+      const response = await fetch("http://localhost:8000/api/auth/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,10 +23,8 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Store token in memory for artifact demo
         console.log("Login successful:", data);
         alert("Login successful!");
-        // In your actual app, use navigate("/packages");
       } else {
         throw new Error("Login failed");
       }
