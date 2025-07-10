@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
+import NotFound from "./components/NotFound";
 import PackageDetails from "./components/PackageDetails";
 import PackageList from "./components/PackageList";
 import SignUp from "./components/SignUp";
@@ -29,6 +30,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/booking" element={<Booking />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </ErrorBoundary>
         </div>

@@ -37,7 +37,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Mountain Background */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative">
         <div className="absolute inset-0">
           <img
@@ -52,7 +51,7 @@ const Login = () => {
         <div className="relative z-10 flex flex-col justify-center items-start p-12 text-white">
           <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
             Welcome Back to Your
-            <span className="block text-blue-300">Mountain Adventure</span>
+            <span className="block text-blue-300">Himalayan Adventures</span>
           </h1>
           <p className="text-xl mb-8 text-gray-200 max-w-md">
             Continue your journey with us and discover the world's most
@@ -80,7 +79,7 @@ const Login = () => {
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Log In</h2>
             <p className="text-gray-600">
               Enter your credentials to access your account
             </p>
@@ -204,10 +203,10 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Mobile mountain image - only visible on small screens */}
+          {/* Mobile mountain image */}
           <div className="lg:hidden mt-8">
             <img
-              src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+              src="/images/everest.png"
               alt="Mountain landscape"
               className="w-full h-32 object-cover rounded-lg opacity-50"
             />
