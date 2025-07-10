@@ -36,34 +36,64 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        {/* Animated background elements */}
-        <div className="absolute top-20 left-20 w-32 h-32 bg-white bg-opacity-10 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-24 h-24 bg-white bg-opacity-10 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-10 w-16 h-16 bg-white bg-opacity-10 rounded-full animate-pulse delay-500"></div>
-        <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-blue-400 bg-opacity-20 rounded-full animate-pulse delay-700"></div>
-        <div className="absolute bottom-1/3 left-1/3 w-28 h-28 bg-purple-400 bg-opacity-15 rounded-full animate-pulse delay-300"></div>
+    <div className="min-h-screen flex">
+      {/* Left side - Mountain Background */}
+      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative">
+        <div className="absolute inset-0">
+          <img
+            src="/images/mountain-house.JPG"
+            alt="Mountain landscape"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-black/50"></div>
+        </div>
+
+        {/* Overlay content */}
+        <div className="relative z-10 flex flex-col justify-center items-start p-12 text-white">
+          <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+            Welcome Back to Your
+            <span className="block text-blue-300">Mountain Adventure</span>
+          </h1>
+          <p className="text-xl mb-8 text-gray-200 max-w-md">
+            Continue your journey with us and discover the world's most
+            breathtaking peaks.
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <span className="text-gray-200">Expert guided treks</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <span className="text-gray-200">Unforgettable experiences</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <span className="text-gray-200">Safe and secure adventures</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Overlapping Form */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="max-w-md w-full bg-white bg-opacity-95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white border-opacity-20">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
+      {/* Right side - Login Form */}
+      <div className="w-full lg:w-1/2 xl:w-2/5 flex items-center justify-center bg-white p-8">
+        <div className="max-w-md w-full space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
             <p className="text-gray-600">
               Enter your credentials to access your account
             </p>
           </div>
 
+          {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
@@ -161,7 +191,8 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          {/* Footer */}
+          <div className="text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
               <a
@@ -171,6 +202,15 @@ const Login = () => {
                 Sign up for free
               </a>
             </p>
+          </div>
+
+          {/* Mobile mountain image - only visible on small screens */}
+          <div className="lg:hidden mt-8">
+            <img
+              src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+              alt="Mountain landscape"
+              className="w-full h-32 object-cover rounded-lg opacity-50"
+            />
           </div>
         </div>
       </div>
