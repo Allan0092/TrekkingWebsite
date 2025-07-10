@@ -402,42 +402,48 @@ const PackageDetails = () => {
                     className="group cursor-pointer"
                     onClick={() => toggleDay(item.day)}
                   >
-                    <div className="flex items-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-300">
-                      <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex flex-col items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
-                        {/* Icon */}
-                        {item.icon && (
-                          <img
-                            src={`/icons/${item.icon}.png`}
-                            alt={item.icon}
-                            className="w-6 h-6 mb-1"
-                          />
-                        )}
-                        {/* Day number */}
-                        <span className="text-green-600 font-bold text-xs">
-                          Day {item.day}
-                        </span>
+                    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-green-300 overflow-hidden">
+                      <div className="flex items-center p-6">
+                        <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex flex-col items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                          {/* Icon */}
+                          {item.icon && (
+                            <img
+                              src={`/icons/${item.icon}.png`}
+                              alt={item.icon}
+                              className="w-6 h-6 mb-1"
+                            />
+                          )}
+                          {/* Day number */}
+                          <span className="text-green-600 font-bold text-xs">
+                            Day {item.day}
+                          </span>
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                            {item.title}
+                          </h3>
+                          <p className="text-gray-500 text-sm">
+                            Day {item.day}
+                          </p>
+                        </div>
+                        <div className="flex-shrink-0">
+                          {expandedDays[item.day] ? (
+                            <ChevronUpIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
+                          ) : (
+                            <ChevronDownIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                          {item.title}
-                        </h3>
-                        <p className="text-gray-500 text-sm">Day {item.day}</p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        {expandedDays[item.day] ? (
-                          <ChevronUpIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
-                        ) : (
-                          <ChevronDownIcon className="h-6 w-6 text-gray-400 group-hover:text-green-500" />
-                        )}
-                      </div>
+                      {expandedDays[item.day] && (
+                        <div className="px-6 pb-6 border-t border-gray-100 bg-green-50/50">
+                          <div className="pt-4">
+                            <p className="text-gray-700 leading-relaxed">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {expandedDays[item.day] && (
-                      <div className="mt-2  p-4 bg-green-50 rounded-lg border-l-4 border-green-200">
-                        <p className="text-gray-700 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
