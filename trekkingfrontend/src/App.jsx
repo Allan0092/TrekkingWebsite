@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import NotFound from "./components/NotFound";
 import PackageDetails from "./components/PackageDetails";
 import PackageList from "./components/PackageList";
+import Profile from "./components/Profile";
 import SignUp from "./components/SignUp";
 import { AuthProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./utils/ScrollToTop";
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/packages/:id" element={<PackageDetails />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/booking" element={<Booking />} />
