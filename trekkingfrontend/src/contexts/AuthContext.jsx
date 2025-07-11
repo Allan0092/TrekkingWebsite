@@ -2,33 +2,27 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem("authToken");
     const userData = localStorage.getItem("userData");
 
     if (token && userData) {
       try {
-        setUser(JSON.parse(userData));
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user data:", error);
+        // Clear invalid data
         localStorage.removeItem("authToken");
         localStorage.removeItem("userData");
       }
     }
-    setLoading(false);
+
+    setIsLoading(false);
   }, []);
 
   const login = async (email, password) => {
@@ -62,45 +56,49 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    // Clear localStorage
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-
-    // Clear user state
-    setUser(null);
-  };
-
-  const register = async (userData) => {
+  const logout = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/auth/register/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      const token = localStorage.getItem("authToken");
 
-      if (response.ok) {
-        const data = await response.json();
-        return { success: true, data };
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
+      if (token) {
+        // Call logout endpoint
+        await fetch("http://localhost:8000/api/auth/logout/", {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      throw error;
+      console.error("Logout error:", error);
+    } finally {
+      // Clear local storage and state regardless of API call success
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userData");
+      setUser(null);
     }
+  };
+
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    localStorage.setItem("userData", JSON.stringify(updatedUserData));
   };
 
   const value = {
     user,
-    loading,
     login,
     logout,
-    register,
+    updateUser,
+    isLoading, // Expose loading state
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

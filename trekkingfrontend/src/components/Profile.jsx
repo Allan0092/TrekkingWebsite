@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
@@ -287,10 +287,19 @@ const Profile = () => {
       );
 
       if (response.ok) {
+        const data = await response.json();
+
+        // Update the user context with new data
+        updateUser({
+          ...user,
+          ...profileData,
+        });
+
         setSuccessMessage("Profile updated successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
-        throw new Error("Failed to update profile");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update profile");
       }
     } catch (error) {
       setErrors({ submit: error.message });
@@ -317,10 +326,22 @@ const Profile = () => {
       );
 
       if (response.ok) {
+        const data = await response.json();
+
+        // Update user context with notification preferences
+        updateUser({
+          ...user,
+          subscribe_newsletter: notificationSettings.newsletter,
+          receive_offers: notificationSettings.offers,
+        });
+
         setSuccessMessage("Notification preferences updated successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
-        throw new Error("Failed to update notification settings");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Failed to update notification settings"
+        );
       }
     } catch (error) {
       setErrors({ submit: error.message });
