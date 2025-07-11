@@ -8,11 +8,14 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
   const [formData, setFormData] = useState({
     full_name: "",
     gender: "",
@@ -223,9 +226,10 @@ const SignUp = () => {
         receive_offers: checkboxes.offers,
       };
 
-      await axios.post("http://localhost:8000/api/auth/register/", submitData);
+      await register(submitData);
+
       alert(
-        "Registration successful! Please check your email for verification."
+        "Registration successful! Please check your email for verification. Redirecting to login page..."
       );
 
       // Reset form
@@ -245,12 +249,14 @@ const SignUp = () => {
         offers: false,
         captcha: false,
       });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // 2 seconds
     } catch (err) {
       console.error("Registration error:", err);
       setErrors({
-        submit:
-          err.response?.data?.message ||
-          "Registration failed. Please try again.",
+        submit: err.message || "Registration failed. Please try again.",
       });
     } finally {
       setIsSubmitting(false);

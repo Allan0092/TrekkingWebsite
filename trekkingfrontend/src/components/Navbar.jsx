@@ -2,14 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Heart, Menu, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -27,6 +27,16 @@ const Navbar = () => {
   }, []);
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    alert("Logged out successfully!");
+  };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <motion.header
@@ -52,13 +62,6 @@ const Navbar = () => {
                 />
                 <div className="absolute inset-0 bg-primary-400 rounded-full blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               </div>
-              {/* <span
-                className={`font-display font-bold text-xl lg:text-2xl transition-colors duration-300 ${
-                  isScrolled ? "text-neutral-900" : "text-neutral-800"
-                }`}
-              >
-                Himalaya Adventure
-              </span> */}
             </Link>
           </motion.div>
 
@@ -121,18 +124,20 @@ const Navbar = () => {
                 >
                   <Heart
                     className={`w-5 h-5 ${
-                      isScrolled ? "text-neutral-600" : "text-white/90"
+                      isScrolled ? "text-neutral-600" : "text-neutral-900"
                     }`}
                   />
-                  <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-semibold text-sm">
-                      {user.name.charAt(0)}
+                      {user.full_name
+                        ? user.full_name.charAt(0).toUpperCase()
+                        : user.email.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${
                       isUserMenuOpen ? "rotate-180" : ""
-                    } ${isScrolled ? "text-neutral-600" : "text-white/90"}`}
+                    } ${isScrolled ? "text-neutral-600" : "text-neutral-900"}`}
                   />
                 </motion.button>
 
@@ -146,29 +151,42 @@ const Navbar = () => {
                       className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-200 overflow-hidden"
                     >
                       <div className="py-2">
+                        <div className="px-4 py-2 border-b border-neutral-100">
+                          <p className="text-sm font-medium text-neutral-900">
+                            {user.full_name || user.email}
+                          </p>
+                          {user.full_name && (
+                            <p className="text-xs text-neutral-500">
+                              {user.email}
+                            </p>
+                          )}
+                        </div>
                         <Link
                           to="/profile"
                           className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
                         >
                           My Profile
                         </Link>
                         <Link
                           to="/bookings"
                           className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
                         >
                           My Bookings
                         </Link>
-                        {user.isAdmin && (
+                        {user.is_staff && (
                           <Link
                             to="/admin"
                             className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                            onClick={() => setIsUserMenuOpen(false)}
                           >
                             Admin Panel
                           </Link>
                         )}
                         <hr className="my-2" />
                         <button
-                          onClick={logout}
+                          onClick={handleLogout}
                           className="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                         >
                           Sign Out
@@ -189,6 +207,17 @@ const Navbar = () => {
                     className="bg-gradient-to-r from-neutral-600 to-neutral-700 text-white px-6 py-2 rounded-lg hover:from-neutral-700 hover:to-neutral-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                   >
                     Login
+                  </Link>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link
+                    to="/signup"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+                  >
+                    Sign Up
                   </Link>
                 </motion.div>
               </div>
@@ -273,7 +302,9 @@ const Navbar = () => {
                     transition={{ duration: 0.3, delay: 0.5 }}
                     className="space-y-2 px-4"
                   >
-                    <p className="font-medium text-neutral-900">{user.name}</p>
+                    <p className="font-medium text-neutral-900">
+                      {user.full_name || user.email}
+                    </p>
                     <Link
                       to="/profile"
                       className="block py-2 text-neutral-700 hover:text-primary-600 transition-colors"
@@ -290,7 +321,7 @@ const Navbar = () => {
                     </Link>
                     <button
                       onClick={() => {
-                        logout();
+                        handleLogout();
                         setIsMenuOpen(false);
                       }}
                       className="block py-2 text-neutral-700 hover:text-primary-600 transition-colors"
@@ -303,14 +334,21 @@ const Navbar = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: 0.5 }}
-                    className="flex space-x-4 px-4"
+                    className="flex flex-col space-y-2 px-4"
                   >
                     <Link
                       to="/login"
-                      className="bg-gradient-to-r from-neutral-600 to-neutral-700 text-white px-6 py-2  font-medium shadow-lg"
+                      className="bg-gradient-to-r from-neutral-600 to-neutral-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg text-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Login
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium shadow-lg text-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign Up
                     </Link>
                   </motion.div>
                 )}

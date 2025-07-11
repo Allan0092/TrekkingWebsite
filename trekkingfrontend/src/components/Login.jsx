@@ -1,7 +1,12 @@
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,23 +18,15 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/auth/login/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      await login(formData.email, formData.password);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        alert("Login successful!");
-      } else {
-        throw new Error("Login failed");
-      }
+      alert("Login successful! Welcome back!");
+
+      navigate("/");
     } catch (err) {
-      setError("Login failed. Please check your email or password.");
+      setError(
+        err.message || "Login failed. Please check your email or password."
+      );
     } finally {
       setIsLoading(false);
     }

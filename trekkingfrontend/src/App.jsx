@@ -11,32 +11,35 @@ import NotFound from "./components/NotFound";
 import PackageDetails from "./components/PackageDetails";
 import PackageList from "./components/PackageList";
 import SignUp from "./components/SignUp";
+import { AuthProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./utils/ScrollToTop";
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <div className="flex-grow pt-[80px] ">
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/packages" element={<PackageList />} />
-              <Route path="/packages/:id" element={<PackageDetails />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<ContactUs />} />
-              <Route path="/booking" element={<Booking />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ErrorBoundary>
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <div className="flex-grow pt-[80px]">
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/packages" element={<PackageList />} />
+                <Route path="/packages/:id" element={<PackageDetails />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<ContactUs />} />
+                <Route path="/booking" element={<Booking />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
