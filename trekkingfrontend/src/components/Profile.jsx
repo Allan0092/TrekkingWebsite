@@ -280,7 +280,7 @@ const Profile = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
           },
           body: JSON.stringify(profileData),
         }
@@ -310,7 +310,7 @@ const Profile = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
           },
           body: JSON.stringify(notificationSettings),
         }
@@ -342,7 +342,7 @@ const Profile = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
           },
           body: JSON.stringify({
             current_password: securityData.current_password,
