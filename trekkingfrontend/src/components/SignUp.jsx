@@ -102,6 +102,16 @@ const SignUp = () => {
       newErrors.full_name = "Full name is required";
     } else if (formData.full_name.trim().length < 2) {
       newErrors.full_name = "Full name must be at least 2 characters";
+    } else if (!/^[a-zA-Z\s'-\.]+$/.test(formData.full_name.trim())) {
+      newErrors.full_name =
+        "Full name can only contain letters, spaces, hyphens, apostrophes, and periods";
+    } else if (/^\s+|\s+$/.test(formData.full_name)) {
+      newErrors.full_name = "Full name cannot start or end with spaces";
+    } else if (/\s{2,}/.test(formData.full_name)) {
+      newErrors.full_name =
+        "Full name cannot contain multiple consecutive spaces";
+    } else if (formData.full_name.trim().length > 50) {
+      newErrors.full_name = "Full name cannot exceed 50 characters";
     }
 
     // Gender validation
@@ -141,19 +151,19 @@ const SignUp = () => {
     // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
+    } else if (formData.email.length > 254) {
+      newErrors.email = "Email address is too long";
     }
 
     // Phone validation
     if (!formData.phone) {
       newErrors.phone = "Phone number is required";
     } else if (
-      !/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,15}$/.test(
-        formData.phone
-      )
+      !/^[+]?[(]?[\d\s\-\(\)]{10,20}$/.test(formData.phone.replace(/\s/g, ""))
     ) {
-      newErrors.phone = "Please enter a valid phone number";
+      newErrors.phone = "Please enter a valid phone number (10-20 digits)";
     }
 
     // Password validation
@@ -186,8 +196,24 @@ const SignUp = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Also add real-time validation for full name
   const handleInputChange = (field, value) => {
+    // For full name, add real-time validation
+    if (field === "full_name") {
+      // Remove any numbers or special characters except allowed ones
+      value = value.replace(/[^a-zA-Z\s'-\.]/g, "");
+
+      // Prevent multiple consecutive spaces
+      value = value.replace(/\s{2,}/g, " ");
+
+      // Limit length
+      if (value.length > 50) {
+        value = value.substring(0, 50);
+      }
+    }
+
     setFormData({ ...formData, [field]: value });
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
