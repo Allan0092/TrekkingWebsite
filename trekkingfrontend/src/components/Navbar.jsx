@@ -177,7 +177,7 @@ const Navbar = () => {
                         </Link>
                         {user.is_staff && (
                           <Link
-                            to="/admin"
+                            to="http://localhost:8000/admin"
                             className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
