@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
@@ -30,20 +32,71 @@ def register_user(request):
     
     if serializer.is_valid():
         user = serializer.save()
-        
-        # Get the verification token
         verification_token = EmailVerificationToken.objects.get(user=user)
         
-        # Send verification email
         try:
             verification_link = f"{settings.FRONTEND_URL}/verify-email/{verification_token.token}"
+            
+            # HTML email content
+            html_message = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Verify Your Email</title>
+            </head>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #2563eb;">Welcome to Himalaya Adventure!</h2>
+                    <p>Thank you for registering with us. Please verify your email address by clicking the button below:</p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{verification_link}" 
+                           style="background-color: #2563eb; color: white; padding: 12px 30px; 
+                                  text-decoration: none; border-radius: 5px; display: inline-block;">
+                            Verify Email Address
+                        </a>
+                    </div>
+                    
+                    <p>Or copy and paste this link in your browser:</p>
+                    <p style="word-break: break-all; color: #666;">{verification_link}</p>
+                    
+                    <p style="margin-top: 30px; font-size: 14px; color: #666;">
+                        This link will expire in 24 hours. If you didn't create an account, please ignore this email.
+                    </p>
+                    
+                    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                    <p style="font-size: 14px; color: #666;">
+                        Best regards,<br>
+                        The Himalaya Adventure Team
+                    </p>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Plain text fallback
+            plain_message = f"""
+            Welcome to Himalaya Adventure!
+            
+            Thank you for registering with us. Please verify your email address by clicking this link:
+            {verification_link}
+            
+            This link will expire in 24 hours.
+            
+            Best regards,
+            The Himalaya Adventure Team
+            """
+            
             send_mail(
-                subject='Verify Your Email - Trekking Website',
-                message=f'Please click the link to verify your email: {verification_link}',
+                subject='Verify Your Email - Himalaya Adventure',
+                message=plain_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
+                html_message=html_message,
                 fail_silently=False,
             )
+            
         except Exception as e:
             print(f"Failed to send verification email: {e}")
         

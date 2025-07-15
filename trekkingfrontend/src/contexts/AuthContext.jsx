@@ -56,6 +56,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (userData) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       const token = localStorage.getItem("authToken");
@@ -87,9 +110,10 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     login,
+    register,
     logout,
     updateUser,
-    isLoading, // Expose loading state
+    isLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

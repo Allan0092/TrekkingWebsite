@@ -147,3 +147,17 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# SMTP Configuration
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'stepelegance@zohomail.com'  
+EMAIL_HOST_PASSWORD = 'sendOTP2023!'  
+DEFAULT_FROM_EMAIL = 'Himalaya Adventure <stepelegance@zohomail.com>'
+
+# Frontend URL for email verification links
+FRONTEND_URL = 'http://localhost:5173'
