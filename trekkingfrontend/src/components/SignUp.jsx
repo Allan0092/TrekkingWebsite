@@ -196,14 +196,10 @@ const SignUp = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Also add real-time validation for full name
   const handleInputChange = (field, value) => {
-    // For full name, add real-time validation
     if (field === "full_name") {
-      // Remove any numbers or special characters except allowed ones
       value = value.replace(/[^a-zA-Z\s'-\.]/g, "");
 
-      // Prevent multiple consecutive spaces
       value = value.replace(/\s{2,}/g, " ");
 
       // Limit length
@@ -222,7 +218,6 @@ const SignUp = () => {
 
   const handleCheckboxChange = (field, value) => {
     setCheckboxes({ ...checkboxes, [field]: value });
-    // Clear error when user checks
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
     }
@@ -237,6 +232,7 @@ const SignUp = () => {
     }
 
     setIsSubmitting(true);
+    setErrors({});
 
     try {
       const submitData = {
@@ -252,33 +248,33 @@ const SignUp = () => {
         receive_offers: checkboxes.offers,
       };
 
-      await register(submitData);
+      const result = await register(submitData);
 
-      alert(
-        "Registration successful! Please check your email for verification. Redirecting to login page..."
-      );
+      if (result.success) {
+        alert(
+          "Registration successful! Please check your email for verification. Redirecting to login page..."
+        );
 
-      // Reset form
-      setFormData({
-        full_name: "",
-        gender: "",
-        country: "",
-        date_of_birth: "",
-        email: "",
-        phone: "",
-        password: "",
-        confirm_password: "",
-      });
-      setCheckboxes({
-        terms: false,
-        newsletter: false,
-        offers: false,
-        captcha: false,
-      });
+        // Reset form
+        setFormData({
+          full_name: "",
+          gender: "",
+          country: "",
+          date_of_birth: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirm_password: "",
+        });
+        setCheckboxes({
+          terms: false,
+          newsletter: false,
+          offers: false,
+          captcha: false,
+        });
 
-      setTimeout(() => {
         navigate("/login");
-      }, 2000); // 2 seconds
+      }
     } catch (err) {
       console.error("Registration error:", err);
       setErrors({

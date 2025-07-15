@@ -7,6 +7,7 @@ import {
 import About from "./components/About";
 import Booking from "./components/Booking";
 import ContactUs from "./components/ContactUs";
+import EmailVerification from "./components/EmailVerification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
 import Homepage from "./components/Homepage";
@@ -65,7 +66,10 @@ const AppContent = () => {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/booking" element={<Booking />} />
-
+              <Route
+                path="/verify-email/:token"
+                element={<EmailVerification />}
+              />
               <Route
                 path="/login"
                 element={
@@ -83,6 +87,7 @@ const AppContent = () => {
                 }
               />
 
+              {/* Protected routes - requires authentication */}
               <Route
                 path="/profile"
                 element={

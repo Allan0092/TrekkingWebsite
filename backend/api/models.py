@@ -105,13 +105,15 @@ class UserProfile(models.Model):
 
 class EmailVerificationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    token = models.CharField(max_length=36, unique=True)  
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(hours=24)
+        if not self.token:
+            self.token = str(uuid.uuid4())  
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -119,7 +121,7 @@ class EmailVerificationToken(models.Model):
 
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    token = models.CharField(max_length=36, unique=True)  
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     used = models.BooleanField(default=False)
@@ -127,6 +129,8 @@ class PasswordResetToken(models.Model):
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(hours=1)
+        if not self.token:
+            self.token = str(uuid.uuid4())  
         super().save(*args, **kwargs)
 
     def __str__(self):

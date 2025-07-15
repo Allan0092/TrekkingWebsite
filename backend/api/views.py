@@ -3,17 +3,16 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated  
+from rest_framework.permissions import IsAdminUser 
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 import uuid
+import traceback
 
 from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package
 from .serializers import (
@@ -28,16 +27,62 @@ from .serializers import (
 @permission_classes([permissions.AllowAny])
 def register_user(request):
     """User registration endpoint"""
-    serializer = UserRegistrationSerializer(data=request.data)
-    
-    if serializer.is_valid():
-        user = serializer.save()
-        verification_token = EmailVerificationToken.objects.get(user=user)
+    try:
+        data = request.data
+        print(f"Registration data received: {data}")
         
+        # Required fields validation
+        required_fields = ['email', 'password', 'full_name']
+        for field in required_fields:
+            if not data.get(field):
+                return Response({
+                    'message': f'{field} is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user already exists
+        if User.objects.filter(email=data['email']).exists():
+            return Response({
+                'message': 'User with this email already exists'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check password confirmation
+        if data.get('password') != data.get('confirm_password'):
+            return Response({
+                'message': 'Passwords do not match'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create user (using email as username)
+        user = User.objects.create_user(
+            username=data['email'],  # Use email as username
+            email=data['email'],
+            password=data['password'],
+            first_name=data.get('full_name', ''),
+        )
+        print(f"User created: {user.email}")
+        
+        # Create user profile
+        profile = UserProfile.objects.create(
+            user=user,
+            full_name=data.get('full_name', ''),
+            phone=data.get('phone', ''),
+            country=data.get('country', ''),
+            date_of_birth=data.get('date_of_birth') if data.get('date_of_birth') else None,
+            gender=data.get('gender', ''),
+            subscribe_newsletter=data.get('subscribe_newsletter', False),
+            receive_offers=data.get('receive_offers', False),
+        )
+        print(f"Profile created for user: {user.email}")
+        
+        # Create email verification token
+        verification_token = EmailVerificationToken.objects.create(user=user)
+        print(f"Verification token created: {verification_token.token}")
+        print(f"Token expires at: {verification_token.expires_at}")
+        
+        # Send verification email
         try:
             verification_link = f"{settings.FRONTEND_URL}/verify-email/{verification_token.token}"
+            print(f"Verification link: {verification_link}")
             
-            # HTML email content
             html_message = f"""
             <!DOCTYPE html>
             <html>
@@ -96,16 +141,24 @@ def register_user(request):
                 html_message=html_message,
                 fail_silently=False,
             )
+            print(f"Verification email sent to: {user.email}")
             
         except Exception as e:
             print(f"Failed to send verification email: {e}")
+            # Continue with registration even if email fails
         
         return Response({
             'message': 'Registration successful! Please check your email for verification.',
-            'user_id': user.id
+            'user_id': user.id,
+            'email': user.email
         }, status=status.HTTP_201_CREATED)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        print(f"Registration error: {e}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return Response({
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
@@ -301,27 +354,65 @@ def change_password(request):
 def verify_email(request, token):
     """Verify email with token"""
     try:
-        verification_token = EmailVerificationToken.objects.get(
-            token=token,
-            expires_at__gt=timezone.now()
-        )
+        print(f"Attempting to verify token: {token}")
+        
+        # Validate token format
+        try:
+            uuid.UUID(token)
+            print(f"Token format is valid UUID: {token}")
+        except ValueError:
+            print(f"Invalid token format: {token}")
+            return Response({
+                'error': 'Invalid token format.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Try to find the verification token
+        try:
+            verification_token = EmailVerificationToken.objects.get(token=token)
+            print(f"Found token for user: {verification_token.user.email}")
+        except EmailVerificationToken.DoesNotExist:
+            print(f"Token {token} not found in database")
+            
+            # Check if user exists and is already verified
+            return Response({
+                'error': 'This verification link has already been used or has expired. Your email may already be verified. Please try logging in.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if token is expired
+        if verification_token.expires_at <= timezone.now():
+            print(f"Token expired at {verification_token.expires_at}")
+            return Response({
+                'error': 'Verification token has expired. Please request a new verification email.'
+            }, status=status.HTTP_400_BAD_REQUEST)
         
         user = verification_token.user
         profile, created = UserProfile.objects.get_or_create(user=user)
         
+        # Check if already verified
+        if profile.email_verified:
+            print(f"Email already verified for user: {user.email}")
+            return Response({
+                'message': 'Email is already verified. You can now login to your account.'
+            }, status=status.HTTP_200_OK)
+        
+        # Verify the email
         profile.email_verified = True
         profile.save()
+        print(f"Email verified for user: {user.email}")
         
         # Delete the verification token
         verification_token.delete()
+        print(f"Verification token deleted for user: {user.email}")
         
-        return Response({'message': 'Email verified successfully'})
+        return Response({
+            'message': 'Email verified successfully! You can now login to your account.'
+        }, status=status.HTTP_200_OK)
         
-    except EmailVerificationToken.DoesNotExist:
-        return Response(
-            {'error': 'Invalid or expired verification token'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    except Exception as e:
+        print(f"Unexpected error in verify_email: {e}")
+        return Response({
+            'error': 'An error occurred during verification. Please try again.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
@@ -386,7 +477,7 @@ def confirm_password_reset(request):
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Package views (keep your existing ones)
+# Package views
 class PackageListView(generics.ListAPIView):
     """List all packages (public view)"""
     queryset = Package.objects.all()
