@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser 
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
@@ -14,12 +14,12 @@ from datetime import timedelta
 import uuid
 import traceback
 
-from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package
+from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package, UserBookmark
 from .serializers import (
     PackageImageSerializer, PackageSerializer,
     UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer,
     PasswordChangeSerializer, PasswordResetRequestSerializer, 
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer, UserBookmarkSerializer
 )
 
 # User Authentication Views
@@ -517,3 +517,65 @@ class PackageImageUploadView(APIView):
             serializer.save(package=package)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_bookmark(request, package_id):
+    """Toggle bookmark for a package"""
+    try:
+        package = Package.objects.get(id=package_id)
+    except Package.DoesNotExist:
+        return Response({
+            'error': 'Package not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # Check if bookmark already exists
+        bookmark = UserBookmark.objects.get(user=request.user, package=package)
+        bookmark.delete()
+        return Response({
+            'bookmarked': False,
+            'message': 'Package removed from bookmarks'
+        }, status=status.HTTP_200_OK)
+    except UserBookmark.DoesNotExist:
+        # Create new bookmark
+        UserBookmark.objects.create(user=request.user, package=package)
+        return Response({
+            'bookmarked': True,
+            'message': 'Package bookmarked successfully'
+        }, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_bookmarks(request):
+    """Get user's bookmarked packages"""
+    try:
+        bookmarks = UserBookmark.objects.filter(user=request.user).order_by('-created_at')
+        serializer = UserBookmarkSerializer(bookmarks, many=True)
+        return Response({
+            'bookmarks': serializer.data,
+            'total': bookmarks.count()
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_bookmark_status(request, package_id):
+    """Check if a package is bookmarked by the user"""
+    try:
+        package = Package.objects.get(id=package_id)
+        is_bookmarked = UserBookmark.objects.filter(
+            user=request.user, 
+            package=package
+        ).exists()
+        
+        return Response({
+            'bookmarked': is_bookmarked
+        }, status=status.HTTP_200_OK)
+    except Package.DoesNotExist:
+        return Response({
+            'error': 'Package not found'
+        }, status=status.HTTP_404_NOT_FOUND)

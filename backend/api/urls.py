@@ -25,4 +25,9 @@ urlpatterns = [
     path('admin/packages/', views.PackageAdminView.as_view(), name='package_admin_list'),
     path('admin/packages/<int:pk>/', views.PackageAdminDetailView.as_view(), name='package_admin_detail'),
     path('admin/packages/<int:package_id>/images/', views.PackageImageUploadView.as_view(), name='package_image_upload'),
+
+    # Bookmark URLs
+    path('bookmarks/', views.user_bookmarks, name='user_bookmarks'),
+    path('packages/<int:package_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
+    path('packages/<int:package_id>/bookmark/status/', views.check_bookmark_status, name='check_bookmark_status'),
 ]

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Heart, Menu, Search, X } from "lucide-react";
+import { Bookmark, ChevronDown, Menu, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -110,93 +110,120 @@ const Navbar = () => {
                     ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
                     : "text-neutral-900 hover:text-primary-600 hover:bg-white/10"
                 }`}
+                title="Search Packages"
               >
                 <Search className="w-5 h-5" />
               </motion.button>
             </Link>
 
             {user ? (
-              <div className="relative">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-3 p-2 rounded-lg transition-colors duration-300 hover:bg-white/10"
-                >
-                  <Heart
-                    className={`w-5 h-5 ${
-                      isScrolled ? "text-neutral-600" : "text-neutral-900"
+              <>
+                <Link to="/bookmarks">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`p-2 rounded-full transition-colors duration-300 ${
+                      isScrolled
+                        ? "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
+                        : "text-neutral-900 hover:text-primary-600 hover:bg-white/10"
+                    } ${
+                      isActive("/bookmarks")
+                        ? "text-primary-600 bg-primary-50"
+                        : ""
                     }`}
-                  />
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">
-                      {user.full_name
-                        ? user.full_name.charAt(0).toUpperCase()
-                        : user.email.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${
-                      isUserMenuOpen ? "rotate-180" : ""
-                    } ${isScrolled ? "text-neutral-600" : "text-neutral-900"}`}
-                  />
-                </motion.button>
+                    title="My Bookmarks"
+                  >
+                    <Bookmark className="w-5 h-5" />
+                  </motion.button>
+                </Link>
 
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-200 overflow-hidden"
-                    >
-                      <div className="py-2">
-                        <div className="px-4 py-2 border-b border-neutral-100">
-                          <p className="text-sm font-medium text-neutral-900">
-                            {user.full_name || user.email}
-                          </p>
-                          {user.full_name && (
-                            <p className="text-xs text-neutral-500">
-                              {user.email}
+                {/* User Profile Dropdown */}
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center space-x-2 p-2 rounded-lg transition-colors duration-300 hover:bg-white/10"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">
+                        {user.full_name
+                          ? user.full_name.charAt(0).toUpperCase()
+                          : user.email.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ${
+                        isUserMenuOpen ? "rotate-180" : ""
+                      } ${
+                        isScrolled ? "text-neutral-600" : "text-neutral-900"
+                      }`}
+                    />
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {isUserMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-200 overflow-hidden"
+                      >
+                        <div className="py-2">
+                          <div className="px-4 py-2 border-b border-neutral-100">
+                            <p className="text-sm font-medium text-neutral-900">
+                              {user.full_name || user.email}
                             </p>
-                          )}
-                        </div>
-                        <Link
-                          to="/profile"
-                          className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          My Profile
-                        </Link>
-                        <Link
-                          to="/bookings"
-                          className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          My Bookings
-                        </Link>
-                        {user.is_staff && (
+                            {user.full_name && (
+                              <p className="text-xs text-neutral-500">
+                                {user.email}
+                              </p>
+                            )}
+                          </div>
                           <Link
-                            to="http://localhost:8000/admin"
+                            to="/profile"
                             className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
-                            Admin Panel
+                            My Profile
                           </Link>
-                        )}
-                        <hr className="my-2" />
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                          <Link
+                            to="/bookmarks"
+                            className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            My Bookmarks
+                          </Link>
+                          <Link
+                            to="/bookings"
+                            className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            My Bookings
+                          </Link>
+                          {user.is_staff && (
+                            <Link
+                              to="http://localhost:8000/admin"
+                              className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                              onClick={() => setIsUserMenuOpen(false)}
+                            >
+                              Admin Panel
+                            </Link>
+                          )}
+                          <hr className="my-2" />
+                          <button
+                            onClick={handleLogout}
+                            className="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                          >
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
             ) : (
               <div className="flex items-center space-x-3">
                 <motion.div
@@ -301,6 +328,13 @@ const Navbar = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       My Profile
+                    </Link>
+                    <Link
+                      to="/bookmarks"
+                      className="block py-2 text-neutral-700 hover:text-primary-600 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Bookmarks
                     </Link>
                     <Link
                       to="/bookings"

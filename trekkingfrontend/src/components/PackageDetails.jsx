@@ -5,10 +5,13 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
+import { useBookmarks } from "../hooks/useBookmarks";
+import { useAuth } from "../contexts/AuthContext";
+import { BookmarkIcon } from "@heroicons/react/24/outline";
 
 const PackageDetails = () => {
   const { id } = useParams();
@@ -28,6 +31,9 @@ const PackageDetails = () => {
     excludes: useRef(null),
   });
   const sliderRef = useRef(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } = useBookmarks();
 
   useEffect(() => {
     const fetchPackage = async () => {
@@ -74,6 +80,12 @@ const PackageDetails = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (user && pkg) {
+      checkBookmarkStatus(pkg.id);
+    }
+  }, [user, pkg, checkBookmarkStatus]);
+
   const scrollToSection = (sectionId) => {
     const element = sectionRefs.current[sectionId].current;
     if (element) {
@@ -115,6 +127,10 @@ const PackageDetails = () => {
       ...prev,
       [category]: !prev[category],
     }));
+  };
+
+  const handleBookmark = async () => {
+    await toggleBookmark(pkg.id, navigate);
   };
 
   const sliderSettings = {

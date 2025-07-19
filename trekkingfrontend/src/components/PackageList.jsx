@@ -13,10 +13,12 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
+import { useBookmarks } from "../hooks/useBookmarks";
+import { useAuth } from "../contexts/AuthContext";
 
 const PackageList = () => {
   const [packages, setPackages] = useState([]);
@@ -32,6 +34,10 @@ const PackageList = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const packagesPerPage = 10;
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } = useBookmarks();
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -182,9 +188,17 @@ const PackageList = () => {
     ),
   };
 
-  const handleBookmark = (pkgId) => {
-    console.log(`Bookmarked package ${pkgId}`);
-    // Implement bookmark functionality
+  // Check bookmark status for visible packages
+  useEffect(() => {
+    if (user && displayPackages.length > 0) {
+      displayPackages.forEach(pkg => {
+        checkBookmarkStatus(pkg.id);
+      });
+    }
+  }, [user, displayPackages, checkBookmarkStatus]);
+
+  const handleBookmark = async (pkgId) => {
+    await toggleBookmark(pkgId, navigate);
   };
 
   const getDifficultyColor = (difficulty) => {
@@ -586,9 +600,17 @@ const PackageList = () => {
                   {/* Bookmark Button */}
                   <button
                     onClick={() => handleBookmark(pkg.id)}
-                    className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+                    className={`absolute top-4 right-4 p-2 backdrop-blur-sm rounded-full transition-all duration-200 ${
+                      bookmarkStatus[pkg.id]
+                        ? 'bg-red-500 text-white hover:bg-red-600' 
+                        : 'bg-white/80 text-gray-700 hover:bg-white'
+                    }`}
                   >
-                    <BookmarkIcon className="h-5 w-5 text-gray-700" />
+                    <BookmarkIcon 
+                      className={`h-5 w-5 ${
+                        bookmarkStatus[pkg.id] ? 'fill-current' : ''
+                      }`} 
+                    />
                   </button>
                 </div>
 

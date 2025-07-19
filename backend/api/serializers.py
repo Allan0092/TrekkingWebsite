@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.db import transaction
-from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package, PackageImage, Itinerary
+from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package, PackageImage, Itinerary, UserBookmark
 
 class PackageImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -160,3 +160,11 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         except PasswordResetToken.DoesNotExist:
             raise serializers.ValidationError("Invalid or expired token.")
         return value
+
+class UserBookmarkSerializer(serializers.ModelSerializer):
+    package = PackageSerializer(read_only=True)
+    
+    class Meta:
+        model = UserBookmark
+        fields = ['id', 'package', 'created_at']
+        read_only_fields = ['created_at']

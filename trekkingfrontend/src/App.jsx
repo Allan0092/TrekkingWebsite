@@ -8,6 +8,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import About from "./components/About";
 import Booking from "./components/Booking";
+import Bookmarks from "./components/Bookmarks";
 import ContactUs from "./components/ContactUs";
 import EmailVerification from "./components/EmailVerification";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -95,6 +96,14 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/bookmarks"
+                element={
+                  <ProtectedRoute>
+                    <Bookmarks />
                   </ProtectedRoute>
                 }
               />
