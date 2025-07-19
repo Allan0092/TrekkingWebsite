@@ -1,14 +1,16 @@
 import {
   BellIcon,
   EnvelopeIcon,
+  ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
   GlobeAltIcon,
+  PencilIcon,
   PhoneIcon,
   ShieldCheckIcon,
-  UserIcon,
-  ExclamationTriangleIcon,
   TrashIcon,
+  UserIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +24,11 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Profile edit mode state
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [originalProfileData, setOriginalProfileData] = useState({});
 
   // Delete account states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -69,23 +76,25 @@ const Profile = () => {
     "Belgium",
     "Brazil",
     "Canada",
+    "Chile",
     "China",
+    "Colombia",
     "Denmark",
     "Egypt",
     "Finland",
     "France",
     "Germany",
+    "Ghana",
     "Greece",
     "India",
     "Indonesia",
     "Iran",
     "Iraq",
     "Ireland",
+    "Israel",
     "Italy",
     "Japan",
-    "Jordan",
     "Kenya",
-    "South Korea",
     "Malaysia",
     "Mexico",
     "Nepal",
@@ -101,41 +110,66 @@ const Profile = () => {
     "Saudi Arabia",
     "Singapore",
     "South Africa",
+    "South Korea",
     "Spain",
     "Sri Lanka",
     "Sweden",
     "Switzerland",
     "Thailand",
     "Turkey",
+    "Ukraine",
+    "United Arab Emirates",
     "United Kingdom",
     "United States",
     "Vietnam",
-    "Other",
   ];
 
-  // Load user data on component mount
+  // Initialize data when user is available
   useEffect(() => {
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // Populate profile data from user
-    setProfileData({
+    const initialData = {
       full_name: user.full_name || "",
       email: user.email || "",
       phone: user.phone || "",
       country: user.country || "",
       date_of_birth: user.date_of_birth || "",
       gender: user.gender || "",
-    });
+    };
 
-    // Load notification settings (you might want to fetch from API)
+    setProfileData(initialData);
+    setOriginalProfileData(initialData);
+
     setNotificationSettings({
       newsletter: user.subscribe_newsletter || false,
       offers: user.receive_offers || false,
     });
   }, [user, navigate]);
+
+  // Check for changes in profile data
+  useEffect(() => {
+    const hasDataChanged = Object.keys(profileData).some(
+      (key) => profileData[key] !== originalProfileData[key]
+    );
+    setHasChanges(hasDataChanged);
+  }, [profileData, originalProfileData]);
+
+  // Edit mode functions
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setErrors({}); // Clear any existing errors
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setProfileData(originalProfileData); // Reset to original data
+    setHasChanges(false);
+    setErrors({});
+    setSuccessMessage("");
+  };
 
   // Validation functions
   const validateProfile = () => {
@@ -304,6 +338,12 @@ const Profile = () => {
 
         toast.success("Profile updated successfully!");
         setSuccessMessage("Profile updated successfully!");
+
+        // Update original data and exit edit mode
+        setOriginalProfileData(profileData);
+        setIsEditing(false);
+        setHasChanges(false);
+
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         const errorData = await response.json();
@@ -561,9 +601,26 @@ const Profile = () => {
               {/* Profile Tab */}
               {activeTab === "profile" && (
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                    Edit Personal Information
-                  </h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-bold text-gray-800">
+                      Personal Information
+                    </h3>
+                    {!isEditing ? (
+                      <button
+                        onClick={handleEditClick}
+                        className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                      >
+                        <PencilIcon className="h-4 w-4 mr-2" />
+                        Edit
+                      </button>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Edit Mode</span>
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      </div>
+                    )}
+                  </div>
+
                   <form onSubmit={handleProfileSubmit} className="space-y-6">
                     {/* Full Name */}
                     <div>
@@ -577,10 +634,15 @@ const Profile = () => {
                         onChange={(e) =>
                           handleProfileChange("full_name", e.target.value)
                         }
+                        disabled={!isEditing}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                           errors.full_name
                             ? "border-red-500"
                             : "border-gray-300"
+                        } ${
+                          !isEditing
+                            ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                            : "bg-white"
                         }`}
                         placeholder="Enter your full name"
                       />
@@ -603,8 +665,13 @@ const Profile = () => {
                         onChange={(e) =>
                           handleProfileChange("email", e.target.value)
                         }
+                        disabled={!isEditing}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                           errors.email ? "border-red-500" : "border-gray-300"
+                        } ${
+                          !isEditing
+                            ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                            : "bg-white"
                         }`}
                         placeholder="Enter your email"
                       />
@@ -628,8 +695,13 @@ const Profile = () => {
                           onChange={(e) =>
                             handleProfileChange("phone", e.target.value)
                           }
+                          disabled={!isEditing}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                             errors.phone ? "border-red-500" : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
                           }`}
                           placeholder="+1 (555) 123-4567"
                         />
@@ -650,10 +722,15 @@ const Profile = () => {
                           onChange={(e) =>
                             handleProfileChange("country", e.target.value)
                           }
+                          disabled={!isEditing}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                             errors.country
                               ? "border-red-500"
                               : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
                           }`}
                         >
                           <option value="">Select Country</option>
@@ -683,10 +760,15 @@ const Profile = () => {
                           onChange={(e) =>
                             handleProfileChange("date_of_birth", e.target.value)
                           }
+                          disabled={!isEditing}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                             errors.date_of_birth
                               ? "border-red-500"
                               : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
                           }`}
                         />
                         {errors.date_of_birth && (
@@ -705,8 +787,13 @@ const Profile = () => {
                           onChange={(e) =>
                             handleProfileChange("gender", e.target.value)
                           }
+                          disabled={!isEditing}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                             errors.gender ? "border-red-500" : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
                           }`}
                         >
                           <option value="">Select Gender</option>
@@ -725,18 +812,46 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? "Updating..." : "Update Profile"}
-                    </button>
+                    {/* Action Buttons - Only shown in edit mode */}
+                    {isEditing && (
+                      <div className="flex space-x-4">
+                        <button
+                          type="submit"
+                          disabled={isLoading || !hasChanges}
+                          className={`flex-1 py-3 font-semibold rounded-lg transition-all duration-200 ${
+                            hasChanges && !isLoading
+                              ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+                              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          }`}
+                        >
+                          {isLoading ? "Updating..." : "Update Profile"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          disabled={isLoading}
+                          className="flex-1 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        >
+                          <XMarkIcon className="h-4 w-4 mr-2" />
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Show changes indicator */}
+                    {isEditing && hasChanges && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <p className="text-sm text-blue-700">
+                          💡 You have unsaved changes. Click "Update Profile" to
+                          save them.
+                        </p>
+                      </div>
+                    )}
                   </form>
                 </div>
               )}
 
-              {/* Notifications Tab */}
+              {/* Notifications Tab - keeping existing implementation */}
               {activeTab === "notifications" && (
                 <div>
                   <h3 className="text-2xl font-bold text-gray-800 mb-6">
@@ -984,8 +1099,9 @@ const Profile = () => {
 
                 <div className="mb-6">
                   <p className="text-gray-700 mb-4">
-                    <strong className="text-red-600">Warning:</strong> This action
-                    cannot be undone. Deleting your account will permanently remove:
+                    <strong className="text-red-600">Warning:</strong> This
+                    action cannot be undone. Deleting your account will
+                    permanently remove:
                   </p>
                   <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
                     <li>Your profile information</li>
@@ -1023,7 +1139,8 @@ const Profile = () => {
                 </div>
 
                 <p className="text-gray-700 mb-6">
-                  Please enter your current password to confirm account deletion.
+                  Please enter your current password to confirm account
+                  deletion.
                 </p>
 
                 <div className="mb-6">
@@ -1035,7 +1152,9 @@ const Profile = () => {
                     value={deletePassword}
                     onChange={(e) => setDeletePassword(e.target.value)}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors ${
-                      errors.deletePassword ? "border-red-500" : "border-gray-300"
+                      errors.deletePassword
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Enter your password"
                   />
@@ -1081,8 +1200,8 @@ const Profile = () => {
 
                 <div className="mb-6">
                   <p className="text-gray-700 mb-4">
-                    <strong className="text-red-600">Last chance!</strong>{" "}
-                    Are you absolutely sure you want to delete your account?
+                    <strong className="text-red-600">Last chance!</strong> Are
+                    you absolutely sure you want to delete your account?
                   </p>
                   <p className="text-sm text-gray-600">
                     Type <strong>DELETE</strong> below to confirm:
@@ -1105,9 +1224,7 @@ const Profile = () => {
                   </button>
                   <button
                     onClick={handleFinalAccountDeletion}
-                    disabled={
-                      isDeletingAccount || deletePassword !== "DELETE"
-                    }
+                    disabled={isDeletingAccount || deletePassword !== "DELETE"}
                     className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-semibold disabled:opacity-50 flex items-center justify-center"
                   >
                     {isDeletingAccount ? (
