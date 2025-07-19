@@ -148,6 +148,11 @@ const Profile = () => {
 
     setProfileData(initialData);
     setOriginalProfileData(initialData);
+
+    // Add this debug line to check what's in user object
+    console.log("User object:", user);
+    console.log("Profile picture URL:", user.profile_picture_url);
+
     setProfilePictureUrl(user.profile_picture_url || null);
 
     setNotificationSettings({

@@ -205,10 +205,28 @@ def login_user(request):
                 'is_verified': profile.email_verified
             }
             
+            # Profile picture URL
+            profile_picture_url = None
+            if profile.profile_picture:
+                profile_picture_url = request.build_absolute_uri(profile.profile_picture.url)
+            
             return Response({
                 'message': 'Login successful',
                 'token': token.key,
-                'user': user_data
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'full_name': profile.full_name,
+                    'profile_picture_url': profile_picture_url,
+                    'phone': profile.phone,
+                    'country': profile.country,
+                    'date_of_birth': profile.date_of_birth,
+                    'gender': profile.gender,
+                    'subscribe_newsletter': profile.subscribe_newsletter,
+                    'receive_offers': profile.receive_offers,
+                    'is_staff': user.is_staff,
+                    'is_verified': profile.email_verified
+                }
             }, status=status.HTTP_200_OK)
         else:
             return Response({
