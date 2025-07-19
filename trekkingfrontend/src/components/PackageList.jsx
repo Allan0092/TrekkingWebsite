@@ -657,7 +657,7 @@ const PackageList = () => {
                         to={`/packages/${pkg.id}`}
                         className="flex-1 bg-gray-100 text-gray-700 text-center py-4 rounded-xl font-semibold text-lg hover:bg-gray-200 transition-colors border border-gray-200"
                       >
-                        View Details
+                        Learn more
                       </Link>
                     </div>
                   </div>

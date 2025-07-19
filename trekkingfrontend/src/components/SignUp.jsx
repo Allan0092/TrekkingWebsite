@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
 const SignUp = () => {
@@ -227,6 +228,7 @@ const SignUp = () => {
     e.preventDefault();
 
     if (!validateForm()) {
+      toast.error("Please correct the errors in the form");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -251,8 +253,11 @@ const SignUp = () => {
       const result = await register(submitData);
 
       if (result.success) {
-        alert(
-          "Registration successful! Please check your email for verification. Redirecting to login page..."
+        toast.success(
+          "Registration successful! Please check your email for verification.",
+          {
+            autoClose: 7000,
+          }
         );
 
         // Reset form
@@ -276,7 +281,7 @@ const SignUp = () => {
         navigate("/login");
       }
     } catch (err) {
-      console.error("Registration error:", err);
+      toast.error(err.message || "Registration failed. Please try again.");
       setErrors({
         submit: err.message || "Registration failed. Please try again.",
       });

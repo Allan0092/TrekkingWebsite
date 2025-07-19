@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
 const Profile = () => {
@@ -273,7 +274,6 @@ const Profile = () => {
 
     setIsLoading(true);
     try {
-      // API call to update profile
       const response = await fetch(
         "http://localhost:8000/api/profile/update/",
         {
@@ -289,12 +289,12 @@ const Profile = () => {
       if (response.ok) {
         const data = await response.json();
 
-        // Update the user context with new data
         updateUser({
           ...user,
           ...profileData,
         });
 
+        toast.success("Profile updated successfully!");
         setSuccessMessage("Profile updated successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
@@ -302,6 +302,7 @@ const Profile = () => {
         throw new Error(errorData.message || "Failed to update profile");
       }
     } catch (error) {
+      toast.error(error.message);
       setErrors({ submit: error.message });
     } finally {
       setIsLoading(false);
@@ -312,7 +313,6 @@ const Profile = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // API call to update notification settings
       const response = await fetch(
         "http://localhost:8000/api/profile/notifications/",
         {
@@ -328,13 +328,13 @@ const Profile = () => {
       if (response.ok) {
         const data = await response.json();
 
-        // Update user context with notification preferences
         updateUser({
           ...user,
           subscribe_newsletter: notificationSettings.newsletter,
           receive_offers: notificationSettings.offers,
         });
 
+        toast.success("Notification preferences updated successfully!");
         setSuccessMessage("Notification preferences updated successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
@@ -344,6 +344,7 @@ const Profile = () => {
         );
       }
     } catch (error) {
+      toast.error(error.message);
       setErrors({ submit: error.message });
     } finally {
       setIsLoading(false);
@@ -356,7 +357,6 @@ const Profile = () => {
 
     setIsLoading(true);
     try {
-      // API call to change password
       const response = await fetch(
         "http://localhost:8000/api/profile/change-password/",
         {
@@ -373,6 +373,7 @@ const Profile = () => {
       );
 
       if (response.ok) {
+        toast.success("Password changed successfully!");
         setSuccessMessage("Password changed successfully!");
         setSecurityData({
           current_password: "",
@@ -385,6 +386,7 @@ const Profile = () => {
         throw new Error(errorData.message || "Failed to change password");
       }
     } catch (error) {
+      toast.error(error.message);
       setErrors({ submit: error.message });
     } finally {
       setIsLoading(false);

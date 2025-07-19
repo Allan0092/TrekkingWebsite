@@ -1,5 +1,6 @@
 import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,9 @@ const ContactUs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
+
+    toast.success("Thank you for your message! We'll get back to you soon.");
+
     setFormData({
       name: "",
       email: "",
@@ -20,7 +24,6 @@ const ContactUs = () => {
       subject: "",
       message: "",
     });
-    alert("Thank you for your message! We'll get back to you soon.");
   };
 
   const handleChange = (e) => {

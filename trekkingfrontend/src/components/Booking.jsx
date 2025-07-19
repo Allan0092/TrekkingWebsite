@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Booking = () => {
   const [pkg, setPkg] = useState(null);
@@ -374,7 +375,7 @@ const Booking = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      // Scroll to top when validation fails
+      toast.error("Please fill in all required fields correctly");
       window.scrollTo({
         top: 0,
         behavior: "smooth",
@@ -400,12 +401,17 @@ const Booking = () => {
       });
 
       setShowModal(false);
-      alert(
-        "Booking confirmed! You will receive a confirmation email shortly."
-      );
+      toast.success("Booking confirmed! You will receive a confirmation email shortly.", {
+        autoClose: 7000,
+      });
+      
+      // Reset form or redirect
+      setTimeout(() => {
+        navigate("/packages");
+      }, 2000);
     } catch (error) {
       console.error("Booking error:", error);
-      alert("There was an error processing your booking. Please try again.");
+      toast.error("There was an error processing your booking. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

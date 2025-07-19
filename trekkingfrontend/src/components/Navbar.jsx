@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Heart, Menu, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
@@ -31,7 +32,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setIsUserMenuOpen(false);
-    alert("Logged out successfully!");
+    toast.success("Logged out successfully!");
   };
 
   if (loading) {

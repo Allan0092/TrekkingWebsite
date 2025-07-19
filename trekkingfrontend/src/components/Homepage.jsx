@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ParallaxBanner, ParallaxProvider } from "react-scroll-parallax";
 import Slider from "react-slick";
+import { toast } from "react-toastify";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
@@ -20,7 +21,7 @@ const Homepage = () => {
   const slides = [
     {
       id: 1,
-      image: "/images/5.jpeg", // Ensure these paths are correct
+      image: "/images/5.jpeg",
       alt: "Annapurna Base Camp Trek",
       caption: "Conquer the Annapurna Base Camp",
       link: "/packages/1",
@@ -116,7 +117,7 @@ const Homepage = () => {
     e.preventDefault();
     console.log("Subscribed with email:", email);
     setEmail("");
-    alert("Thank you for subscribing!"); // User feedback
+    toast.success("Thank you for subscribing to our newsletter!");
   };
 
   const formatDifficulty = (difficulty) => {
@@ -154,7 +155,7 @@ const Homepage = () => {
                   layers={[
                     {
                       image: slide.image,
-                      speed: -20, // Adjust speed for desired parallax effect
+                      speed: -20,
                     },
                     {
                       children: (
@@ -192,7 +193,7 @@ const Homepage = () => {
                       ),
                     },
                   ]}
-                  className="h-[650px] sm:h-[700px] lg:h-[800px]" // Increased height for better parallax visibility
+                  className="h-[650px] sm:h-[700px] lg:h-[800px]"
                 />
               </div>
             ))}

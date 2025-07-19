@@ -1,6 +1,7 @@
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
@@ -18,15 +19,24 @@ const Login = () => {
     setError("");
 
     try {
-      await login(formData.email, formData.password);
+      const result = await login(formData.email, formData.password);
 
-      alert("Login successful! Welcome back!");
-
-      navigate("/");
+      if (result.success) {
+        toast.success(
+          `Welcome back, ${
+            result.data.user.full_name || result.data.user.email
+          }!`
+        );
+        navigate("/");
+      } else {
+        toast.error(result.data.message || "Login failed");
+        setError(result.data.message);
+      }
     } catch (err) {
-      setError(
-        err.message || "Login failed. Please check your email or password."
-      );
+      const errorMessage =
+        err.message || "Login failed. Please check your email or password";
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
