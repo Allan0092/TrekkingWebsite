@@ -94,6 +94,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=50, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)  # Add this line
     subscribe_newsletter = models.BooleanField(default=False)
     receive_offers = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
@@ -102,6 +103,12 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.full_name}"
+
+    def get_profile_picture_url(self):
+        """Get the full URL for the profile picture"""
+        if self.profile_picture:
+            return self.profile_picture.url
+        return None
 
 class EmailVerificationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

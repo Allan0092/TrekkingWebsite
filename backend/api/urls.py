@@ -11,6 +11,10 @@ urlpatterns = [
     path('profile/update/', views.update_profile, name='update_profile'),
     path('profile/notifications/', views.update_notifications, name='update_notifications'),
     path('profile/change-password/', views.change_password, name='change_password'),
+
+    # Profile picture management
+    path('profile/upload-picture/', views.upload_profile_picture, name='upload_profile_picture'),
+    path('profile/delete-picture/', views.delete_profile_picture, name='delete_profile_picture'),
     
     # Email verification and password reset
     path('auth/verify-email/<str:token>/', views.verify_email, name='verify_email'),
@@ -30,6 +34,7 @@ urlpatterns = [
     path('bookmarks/', views.user_bookmarks, name='user_bookmarks'),
     path('packages/<int:package_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
     path('packages/<int:package_id>/bookmark/status/', views.check_bookmark_status, name='check_bookmark_status'),
+
 
     # Account deletion URLs
     path('account/delete/', views.delete_user_account, name='delete_user_account'),

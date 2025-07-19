@@ -13,6 +13,8 @@ from django.utils import timezone
 from datetime import timedelta
 import uuid
 import traceback
+from PIL import Image
+import os
 
 from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package, UserBookmark
 from .serializers import (
@@ -651,4 +653,121 @@ def verify_password_for_deletion(request):
         return Response({
             'error': f'Password verification failed: {str(e)}',
             'valid': False
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def upload_profile_picture(request):
+    """Upload profile picture"""
+    try:
+        if 'profile_picture' not in request.FILES:
+            return Response({
+                'error': 'No image file provided'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        image_file = request.FILES['profile_picture']
+        
+        # Validate file type
+        allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+        if image_file.content_type not in allowed_types:
+            return Response({
+                'error': 'Invalid file type. Please upload JPEG, PNG, or GIF images only.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate file size (max 5MB)
+        max_size = 5 * 1024 * 1024  # 5MB
+        if image_file.size > max_size:
+            return Response({
+                'error': 'File size too large. Maximum size is 5MB.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get or create user profile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Delete old profile picture if exists
+        if profile.profile_picture:
+            old_path = profile.profile_picture.path
+            if os.path.exists(old_path):
+                os.remove(old_path)
+
+        # Save new profile picture
+        profile.profile_picture = image_file
+        profile.save()
+
+        # Process image (resize to passport size: 200x200px)
+        try:
+            if profile.profile_picture:
+                image_path = profile.profile_picture.path
+                with Image.open(image_path) as img:
+                    # Convert to RGB if necessary
+                    if img.mode in ('RGBA', 'LA', 'P'):
+                        img = img.convert('RGB')
+                    
+                    # Resize image to 200x200 (passport size)
+                    img = img.resize((200, 200), Image.Resampling.LANCZOS)
+                    img.save(image_path, 'JPEG', quality=85)
+        except Exception as img_error:
+            print(f"Image processing error: {img_error}")
+            # Continue even if image processing fails
+
+        # Generate the full URL for the profile picture
+        profile_picture_url = None
+        if profile.profile_picture:
+            profile_picture_url = request.build_absolute_uri(profile.profile_picture.url)
+        
+        # Debug: Print the generated URL
+        print(f"Generated profile picture URL: {profile_picture_url}")
+
+        # Return updated profile data
+        return Response({
+            'message': 'Profile picture uploaded successfully',
+            'profile_picture_url': profile_picture_url,
+            'user': {
+                'id': request.user.id,
+                'email': request.user.email,
+                'full_name': profile.full_name,
+                'profile_picture_url': profile_picture_url,
+            }
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(f"Upload error: {str(e)}")
+        return Response({
+            'error': f'Failed to upload profile picture: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def delete_profile_picture(request):
+    """Delete profile picture"""
+    try:
+        profile = UserProfile.objects.get(user=request.user)
+        
+        if profile.profile_picture:
+            # Delete the file from storage
+            old_path = profile.profile_picture.path
+            if os.path.exists(old_path):
+                os.remove(old_path)
+            
+            # Clear the database field
+            profile.profile_picture = None
+            profile.save()
+            
+            return Response({
+                'message': 'Profile picture deleted successfully'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'No profile picture to delete'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except UserProfile.DoesNotExist:
+        return Response({
+            'error': 'User profile not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'error': f'Failed to delete profile picture: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -104,15 +104,26 @@ class UserLoginSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
     date_joined = serializers.CharField(source='user.date_joined', read_only=True)
+    profile_picture_url = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = [
             'id', 'email', 'full_name', 'gender', 
-            'country', 'date_of_birth', 'phone', 'subscribe_newsletter', 
+            'country', 'date_of_birth', 'phone', 'profile_picture', 
+            'profile_picture_url', 'subscribe_newsletter', 
             'receive_offers', 'email_verified', 'date_joined'
         ]
-        read_only_fields = ['id', 'email', 'email_verified', 'date_joined']
+        read_only_fields = ['id', 'email', 'email_verified', 'date_joined', 'profile_picture_url']
+
+    def get_profile_picture_url(self, obj):
+        """Get the full URL for the profile picture"""
+        if obj.profile_picture:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile_picture.url)
+            return obj.profile_picture.url
+        return None
 
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField()

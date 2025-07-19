@@ -1,5 +1,6 @@
 import {
   BellIcon,
+  CameraIcon,
   EnvelopeIcon,
   ExclamationTriangleIcon,
   EyeIcon,
@@ -12,7 +13,7 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
@@ -20,6 +21,7 @@ import { useAuth } from "../contexts/AuthContext";
 const Profile = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -29,6 +31,10 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [originalProfileData, setOriginalProfileData] = useState({});
+
+  // Profile picture states
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   // Delete account states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -142,6 +148,7 @@ const Profile = () => {
 
     setProfileData(initialData);
     setOriginalProfileData(initialData);
+    setProfilePictureUrl(user.profile_picture_url || null);
 
     setNotificationSettings({
       newsletter: user.subscribe_newsletter || false,
@@ -156,6 +163,113 @@ const Profile = () => {
     );
     setHasChanges(hasDataChanged);
   }, [profileData, originalProfileData]);
+
+  // Profile picture functions
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Please upload a valid image file (JPEG, PNG, or GIF)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast.error("File size too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("profile_picture", file);
+
+      const response = await fetch(
+        "http://localhost:8000/api/profile/upload-picture/",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
+          },
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setProfilePictureUrl(data.profile_picture_url);
+        updateUser({
+          ...user,
+          profile_picture_url: data.profile_picture_url,
+        });
+        toast.success("Profile picture uploaded successfully!");
+      } else {
+        toast.error(data.error || "Failed to upload profile picture");
+      }
+    } catch (error) {
+      toast.error("An error occurred while uploading the image");
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploadingImage(false);
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDeleteProfilePicture = async () => {
+    if (!profilePictureUrl) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/profile/delete-picture/",
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setProfilePictureUrl(null);
+        updateUser({
+          ...user,
+          profile_picture_url: null,
+        });
+        toast.success("Profile picture deleted successfully!");
+      } else {
+        toast.error(data.error || "Failed to delete profile picture");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the image");
+      console.error("Delete error:", error);
+    }
+  };
+
+  // Generate initials for avatar fallback
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((word) => word.charAt(0))
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+  };
 
   // Edit mode functions
   const handleEditClick = () => {
@@ -619,6 +733,75 @@ const Profile = () => {
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                       </div>
                     )}
+                  </div>
+
+                  {/* Profile Picture Section */}
+                  <div className="flex flex-col items-center mb-8">
+                    <div className="relative group">
+                      <div
+                        onClick={handleAvatarClick}
+                        className="w-32 h-32 rounded-full cursor-pointer transition-all duration-200 group-hover:shadow-lg group-hover:scale-105 overflow-hidden border-4 border-gray-200 group-hover:border-blue-300"
+                      >
+                        {profilePictureUrl ? (
+                          <img
+                            src={profilePictureUrl}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                            <span className="text-white text-3xl font-bold">
+                              {getInitials(profileData.full_name || user.email)}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Overlay */}
+                        <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                          <CameraIcon className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </div>
+
+                        {/* Upload indicator */}
+                        {isUploadingImage && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Delete button for existing profile picture */}
+                      {profilePictureUrl && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteProfilePicture();
+                          }}
+                          className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center shadow-lg"
+                          title="Delete profile picture"
+                        >
+                          <XMarkIcon className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-600 mt-3 text-center">
+                      Upload your photo
+                      <br />
+                      <span className="text-xs text-gray-500">
+                        Click on the avatar to upload a passport-size photo
+                        <br />
+                        (Max 5MB, JPEG/PNG/GIF)
+                      </span>
+                    </p>
+
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
                   </div>
 
                   <form onSubmit={handleProfileSubmit} className="space-y-6">
