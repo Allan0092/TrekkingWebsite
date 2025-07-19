@@ -209,17 +209,6 @@ const Navbar = () => {
                     Login
                   </Link>
                 </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link
-                    to="/signup"
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
-                  >
-                    Sign Up
-                  </Link>
-                </motion.div>
               </div>
             )}
           </div>
@@ -342,13 +331,6 @@ const Navbar = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Login
-                    </Link>
-                    <Link
-                      to="/signup"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium shadow-lg text-center"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Sign Up
                     </Link>
                   </motion.div>
                 )}
