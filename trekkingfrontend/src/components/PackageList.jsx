@@ -6,10 +6,10 @@ import {
   ChevronRightIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
+  FireIcon, // Changed from SparklesIcon
   FunnelIcon,
   MagnifyingGlassIcon,
   MapPinIcon,
-  SparklesIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
@@ -216,13 +216,13 @@ const PackageList = () => {
       case "EASY":
         return "text-green-500";
       case "MEDIUM":
-        return "text-blue-500";
+        return "text-yellow-500";
       case "TOUGH":
         return "text-orange-500";
       case "VERY_TOUGH":
         return "text-red-500";
       default:
-        return "text-gray-500";
+        return "text-gray-400";
     }
   };
 
@@ -231,6 +231,21 @@ const PackageList = () => {
       return "Very Tough";
     }
     return difficulty || "N/A";
+  };
+
+  const getDifficultyIconColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-500";
+      case "MEDIUM":
+        return "text-yellow-500";
+      case "TOUGH":
+        return "text-orange-500";
+      case "VERY_TOUGH":
+        return "text-red-500";
+      default:
+        return "text-gray-400";
+    }
   };
 
   // Pagination component
@@ -449,7 +464,7 @@ const PackageList = () => {
                 {/* Difficulty Filter */}
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    <FireIcon className="h-4 w-4 mr-2" />
                     Difficulty
                   </label>
                   <select
@@ -664,7 +679,11 @@ const PackageList = () => {
                           <p className="text-sm text-gray-500">altitude</p>
                         </div>
                         <div className="text-center">
-                          <SparklesIcon className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                          <FireIcon
+                            className={`h-6 w-6 mx-auto mb-2 ${getDifficultyIconColor(
+                              pkg.difficulty
+                            )}`}
+                          />
                           <p
                             className={`text-lg font-semibold ${getDifficultyColor(
                               pkg.difficulty

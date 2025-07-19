@@ -1,6 +1,8 @@
 import {
+  CalendarIcon,
   ChevronDownIcon,
   CurrencyDollarIcon,
+  FireIcon,
   ShieldCheckIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
@@ -125,6 +127,21 @@ const Homepage = () => {
       return "Very Tough";
     }
     return difficulty || "N/A";
+  };
+
+  const getDifficultyIconColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-500";
+      case "MEDIUM":
+        return "text-yellow-500";
+      case "TOUGH":
+        return "text-orange-500";
+      case "VERY_TOUGH":
+        return "text-red-500";
+      default:
+        return "text-gray-400";
+    }
   };
 
   // Framer Motion Variants for staggered animations
@@ -315,16 +332,36 @@ const Homepage = () => {
                   <h3 className="text-2xl font-bold text-neutral-900 mb-2">
                     {pkg.title || "Unnamed Package"}
                   </h3>
-                  <p className="text-lg text-neutral-600 mb-4 flex items-center">
-                    <span className="font-semibold text-primary-600">
-                      ${pkg.price || "N/A"}
-                    </span>{" "}
-                    <span className="mx-2 text-neutral-400">|</span>
-                    <span className="flex items-center">
-                      {pkg.duration || "N/A"} days
+                  <p className="text-lg text-neutral-600 mb-4 flex items-center flex-wrap gap-4">
+                    <span className="flex items-center gap-1 font-semibold text-primary-600">
+                      <CurrencyDollarIcon className="h-4 w-4" />$
+                      {pkg.price || "N/A"}
                     </span>
                     <span className="mx-2 text-neutral-400">|</span>
-                    <span className="text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+                    <span className="flex items-center gap-1">
+                      <CalendarIcon className="h-4 w-4" />
+                      {pkg.duration || "N/A"} days
+                    </span>
+                    {pkg.altitude && (
+                      <>
+                        <span className="mx-2 text-neutral-400">|</span>
+                        <span className="flex items-center gap-1">
+                          <img
+                            src="/icons/mountain_peak.png"
+                            alt="Altitude"
+                            className="h-4 w-4"
+                          />
+                          {pkg.altitude}m
+                        </span>
+                      </>
+                    )}
+                    <span className="mx-2 text-neutral-400">|</span>
+                    <span className="flex items-center gap-1 text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+                      <FireIcon
+                        className={`h-3 w-3 ${getDifficultyIconColor(
+                          pkg.difficulty
+                        )}`}
+                      />
                       {formatDifficulty(pkg.difficulty)}
                     </span>
                   </p>

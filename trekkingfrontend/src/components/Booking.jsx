@@ -1,18 +1,14 @@
 import {
-  AlertCircle,
-  Calendar,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  DollarSign,
-  Globe,
-  Mail,
-  MapPin,
-  Mountain,
-  Phone,
-  User,
-  Users,
-} from "lucide-react";
+  CalendarIcon,
+  CurrencyDollarIcon,
+  EnvelopeIcon,
+  FireIcon,
+  GlobeAltIcon,
+  MapPinIcon,
+  PhoneIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import { Check, ChevronLeft, ChevronRight, UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -497,15 +493,30 @@ const Booking = () => {
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case "EASY":
-        return "text-green-600 bg-green-100";
+        return "text-green-600";
       case "MEDIUM":
-        return "text-blue-600 bg-blue-100";
+        return "text-blue-600 ";
       case "TOUGH":
-        return "text-orange-600 bg-orange-100";
+        return "text-orange-600";
       case "VERY_TOUGH":
-        return "text-red-600 bg-red-100";
+        return "text-red-600 ";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "text-gray-600";
+    }
+  };
+
+  const getDifficultyIconColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-600";
+      case "MEDIUM":
+        return "text-yellow-600";
+      case "TOUGH":
+        return "text-orange-600";
+      case "VERY_TOUGH":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
     }
   };
 
@@ -593,7 +604,7 @@ const Booking = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-blue-100 rounded-full">
-                <Calendar className="h-6 w-6 text-blue-600" />
+                <CalendarIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Duration</p>
@@ -602,7 +613,7 @@ const Booking = () => {
             </div>
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-green-100 rounded-full">
-                <DollarSign className="h-6 w-6 text-green-600" />
+                <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Base Price</p>
@@ -611,7 +622,11 @@ const Booking = () => {
             </div>
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-purple-100 rounded-full">
-                <Mountain className="h-6 w-6 text-purple-600" />
+                <img
+                  src="/icons/mountain_peak.png"
+                  alt="Mountain"
+                  className="h-6 w-6"
+                />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Altitude</p>
@@ -620,12 +635,16 @@ const Booking = () => {
             </div>
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-orange-100 rounded-full">
-                <AlertCircle className="h-6 w-6 text-orange-600" />
+                <FireIcon
+                  className={`h-6 w-6 ${getDifficultyIconColor(
+                    pkg.difficulty
+                  )}`}
+                />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Difficulty</p>
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
+                  className={`inline-block text-sm font-medium ${getDifficultyColor(
                     pkg.difficulty
                   )}`}
                 >
@@ -644,7 +663,7 @@ const Booking = () => {
               Group Size
             </h2>
             <div className="flex items-center space-x-4">
-              <Users className="h-6 w-6 text-gray-600" />
+              <UsersIcon className="h-6 w-6 text-gray-600" />
               <label className="text-lg font-medium text-gray-700">
                 Number of People:
               </label>
@@ -723,26 +742,28 @@ const Booking = () => {
                 {/* Full Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <User className="inline h-4 w-4 mr-1" />
                     Full Name *
                   </label>
-                  <input
-                    type="text"
-                    value={currentPerson.fullName}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "fullName",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-fullName`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    placeholder="Enter full name"
-                  />
+                  <div className="relative">
+                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      value={currentPerson.fullName}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "fullName",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-fullName`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="Enter full name"
+                    />
+                  </div>
                   {validationErrors[`${currentPersonIndex}-fullName`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-fullName`]}
@@ -753,25 +774,27 @@ const Booking = () => {
                 {/* Date of Birth */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="inline h-4 w-4 mr-1" />
                     Date of Birth *
                   </label>
-                  <input
-                    type="date"
-                    value={currentPerson.dateOfBirth}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "dateOfBirth",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-dateOfBirth`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
+                  <div className="relative">
+                    <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="date"
+                      value={currentPerson.dateOfBirth}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "dateOfBirth",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-dateOfBirth`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                  </div>
                   {validationErrors[`${currentPersonIndex}-dateOfBirth`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-dateOfBirth`]}
@@ -782,26 +805,28 @@ const Booking = () => {
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Mail className="inline h-4 w-4 mr-1" />
                     Email *
                   </label>
-                  <input
-                    type="email"
-                    value={currentPerson.email}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "email",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-email`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    placeholder="Enter email address"
-                  />
+                  <div className="relative">
+                    <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="email"
+                      value={currentPerson.email}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "email",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-email`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="Enter email address"
+                    />
+                  </div>
                   {validationErrors[`${currentPersonIndex}-email`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-email`]}
@@ -812,27 +837,29 @@ const Booking = () => {
                 {/* Phone */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Phone className="inline h-4 w-4 mr-1" />
                     Phone *
                   </label>
-                  <input
-                    type="tel"
-                    value={currentPerson.phone}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "phone",
-                        e.target.value
-                      )
-                    }
-                    pattern="[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-phone`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    placeholder="e.g. +1 (555) 123-4567"
-                  />
+                  <div className="relative">
+                    <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="tel"
+                      value={currentPerson.phone}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "phone",
+                          e.target.value
+                        )
+                      }
+                      pattern="[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,3}[-\s.]?[0-9]{4,10}"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-phone`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="e.g. +1 (555) 123-4567"
+                    />
+                  </div>
                   {validationErrors[`${currentPersonIndex}-phone`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-phone`]}
@@ -843,42 +870,44 @@ const Booking = () => {
                 {/* Nationality */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Globe className="inline h-4 w-4 mr-1" />
                     Nationality *
                   </label>
-                  <select
-                    value={currentPerson.nationality}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "nationality",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-nationality`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select Nationality</option>
-                    {[
-                      "United States",
-                      "United Kingdom",
-                      "Nepal",
-                      "Canada",
-                      "Australia",
-                      "India",
-                      "Germany",
-                      "France",
-                      "Japan",
-                      "Other",
-                    ].map((nat) => (
-                      <option key={nat} value={nat}>
-                        {nat}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <GlobeAltIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <select
+                      value={currentPerson.nationality}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "nationality",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-nationality`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <option value="">Select Nationality</option>
+                      {[
+                        "United States",
+                        "United Kingdom",
+                        "Nepal",
+                        "Canada",
+                        "Australia",
+                        "India",
+                        "Germany",
+                        "France",
+                        "Japan",
+                        "Other",
+                      ].map((nat) => (
+                        <option key={nat} value={nat}>
+                          {nat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   {validationErrors[`${currentPersonIndex}-nationality`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-nationality`]}
@@ -921,25 +950,27 @@ const Booking = () => {
                 {/* Travel Dates */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <MapPin className="inline h-4 w-4 mr-1" />
                     Arrival Date *
                   </label>
-                  <input
-                    type="date"
-                    value={currentPerson.dateOfArrival}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "dateOfArrival",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-dateOfArrival`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
+                  <div className="relative">
+                    <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="date"
+                      value={currentPerson.dateOfArrival}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "dateOfArrival",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[`${currentPersonIndex}-dateOfArrival`]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                  </div>
                   {validationErrors[`${currentPersonIndex}-dateOfArrival`] && (
                     <p className="mt-1 text-sm text-red-600">
                       {validationErrors[`${currentPersonIndex}-dateOfArrival`]}
@@ -949,25 +980,29 @@ const Booking = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <MapPin className="inline h-4 w-4 mr-1" />
                     Departure Date *
                   </label>
-                  <input
-                    type="date"
-                    value={currentPerson.dateOfDeparture}
-                    onChange={(e) =>
-                      handlePersonChange(
-                        currentPersonIndex,
-                        "dateOfDeparture",
-                        e.target.value
-                      )
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors[`${currentPersonIndex}-dateOfDeparture`]
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
+                  <div className="relative">
+                    <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="date"
+                      value={currentPerson.dateOfDeparture}
+                      onChange={(e) =>
+                        handlePersonChange(
+                          currentPersonIndex,
+                          "dateOfDeparture",
+                          e.target.value
+                        )
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        validationErrors[
+                          `${currentPersonIndex}-dateOfDeparture`
+                        ]
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                  </div>
                   {validationErrors[
                     `${currentPersonIndex}-dateOfDeparture`
                   ] && (
@@ -1065,7 +1100,7 @@ const Booking = () => {
           {/* Price Summary */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <DollarSign className="h-6 w-6 mr-2 text-green-600" />
+              <CurrencyDollarIcon className="h-6 w-6 mr-2 text-green-600" />
               Price Summary
             </h2>
 
@@ -1186,7 +1221,7 @@ const Booking = () => {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500">
-                <DollarSign className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <CurrencyDollarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>Add travelers to see pricing details</p>
               </div>
             )}

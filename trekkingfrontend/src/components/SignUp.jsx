@@ -1,9 +1,11 @@
 import {
   BookmarkIcon,
+  CalendarIcon,
   EnvelopeIcon,
   EyeIcon,
   EyeSlashIcon,
   GlobeAltIcon,
+  LockClosedIcon,
   PhoneIcon,
   ShieldCheckIcon,
   UserIcon,
@@ -319,20 +321,22 @@ const SignUp = () => {
               {/* Full Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <UserIcon className="inline h-4 w-4 mr-1" />
                   Full Name *
                 </label>
-                <input
-                  type="text"
-                  value={formData.full_name}
-                  onChange={(e) =>
-                    handleInputChange("full_name", e.target.value)
-                  }
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    errors.full_name ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="Enter your full name"
-                />
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    value={formData.full_name}
+                    onChange={(e) =>
+                      handleInputChange("full_name", e.target.value)
+                    }
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.full_name ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="Enter your full name"
+                  />
+                </div>
                 {errors.full_name && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.full_name}
@@ -368,25 +372,27 @@ const SignUp = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <GlobeAltIcon className="inline h-4 w-4 mr-1" />
                     Country *
                   </label>
-                  <select
-                    value={formData.country}
-                    onChange={(e) =>
-                      handleInputChange("country", e.target.value)
-                    }
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                      errors.country ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select Country</option>
-                    {countries.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <GlobeAltIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <select
+                      value={formData.country}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        errors.country ? "border-red-500" : "border-gray-300"
+                      }`}
+                    >
+                      <option value="">Select Country</option>
+                      {countries.map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   {errors.country && (
                     <p className="mt-1 text-sm text-red-600">
                       {errors.country}
@@ -400,16 +406,21 @@ const SignUp = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth *
                 </label>
-                <input
-                  type="date"
-                  value={formData.date_of_birth}
-                  onChange={(e) =>
-                    handleInputChange("date_of_birth", e.target.value)
-                  }
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    errors.date_of_birth ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
+                <div className="relative">
+                  <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="date"
+                    value={formData.date_of_birth}
+                    onChange={(e) =>
+                      handleInputChange("date_of_birth", e.target.value)
+                    }
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      errors.date_of_birth
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  />
+                </div>
                 {errors.date_of_birth && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.date_of_birth}
@@ -421,18 +432,22 @@ const SignUp = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                     Email Address *
                   </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
-                    placeholder="Enter your email"
-                  />
+                  <div className="relative">
+                    <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="Enter your email"
+                    />
+                  </div>
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                   )}
@@ -440,18 +455,22 @@ const SignUp = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <PhoneIcon className="inline h-4 w-4 mr-1" />
                     Phone Number *
                   </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                      errors.phone ? "border-red-500" : "border-gray-300"
-                    }`}
-                    placeholder="+1 (555) 123-4567"
-                  />
+                  <div className="relative">
+                    <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        errors.phone ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
                   )}
@@ -465,13 +484,14 @@ const SignUp = () => {
                     Password *
                   </label>
                   <div className="relative">
+                    <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={(e) =>
                         handleInputChange("password", e.target.value)
                       }
-                      className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                         errors.password ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="Create a password"
@@ -479,7 +499,7 @@ const SignUp = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                     >
                       {showPassword ? (
                         <EyeSlashIcon className="h-5 w-5" />
@@ -497,28 +517,29 @@ const SignUp = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Repeat Password *
+                    Confirm Password *
                   </label>
                   <div className="relative">
+                    <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       value={formData.confirm_password}
                       onChange={(e) =>
                         handleInputChange("confirm_password", e.target.value)
                       }
-                      className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                         errors.confirm_password
                           ? "border-red-500"
                           : "border-gray-300"
                       }`}
-                      placeholder="Repeat your password"
+                      placeholder="Confirm your password"
                     />
                     <button
                       type="button"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                     >
                       {showConfirmPassword ? (
                         <EyeSlashIcon className="h-5 w-5" />

@@ -1,4 +1,11 @@
-import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
+import {
+  ClockIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+  PaperAirplaneIcon,
+  PhoneIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -47,7 +54,7 @@ const ContactUs = () => {
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-primary-600" />
+                    <MapPinIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-900 mb-1">
@@ -63,7 +70,7 @@ const ContactUs = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-primary-600" />
+                    <PhoneIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-900 mb-1">
@@ -79,7 +86,7 @@ const ContactUs = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-primary-600" />
+                    <EnvelopeIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-900 mb-1">
@@ -95,7 +102,7 @@ const ContactUs = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-primary-600" />
+                    <ClockIcon className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-neutral-900 mb-1">
@@ -137,16 +144,19 @@ const ContactUs = () => {
                     >
                       Full Name *
                     </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                      placeholder="Enter your full name"
-                    />
+                    <div className="relative">
+                      <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -156,16 +166,19 @@ const ContactUs = () => {
                     >
                       Email Address *
                     </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                      placeholder="Enter your email"
-                    />
+                    <div className="relative">
+                      <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                        placeholder="Enter your email"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -177,15 +190,18 @@ const ContactUs = () => {
                     >
                       Phone Number
                     </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                      placeholder="Enter your phone number"
-                    />
+                    <div className="relative">
+                      <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -238,9 +254,9 @@ const ContactUs = () => {
 
                   <button
                     type="submit"
-                    className="flex items-center space-x-2 bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                    className="flex items-center space-x-2 bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-all duration-200 font-medium"
                   >
-                    <Send className="w-5 h-5" />
+                    <PaperAirplaneIcon className="w-5 h-5" />
                     <span>Send Message</span>
                   </button>
                 </div>

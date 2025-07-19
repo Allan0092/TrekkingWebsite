@@ -1,17 +1,19 @@
 import {
+  CalendarIcon,
   CheckCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  CurrencyDollarIcon,
+  FireIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import { useBookmarks } from "../hooks/useBookmarks";
 import { useAuth } from "../contexts/AuthContext";
-import { BookmarkIcon } from "@heroicons/react/24/outline";
+import { useBookmarks } from "../hooks/useBookmarks";
 
 const PackageDetails = () => {
   const { id } = useParams();
@@ -33,7 +35,8 @@ const PackageDetails = () => {
   const sliderRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } = useBookmarks();
+  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } =
+    useBookmarks();
 
   useEffect(() => {
     const fetchPackage = async () => {
@@ -170,6 +173,21 @@ const PackageDetails = () => {
         return "text-red-500";
       default:
         return "text-gray-500";
+    }
+  };
+
+  const getDifficultyIconColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-400";
+      case "MEDIUM":
+        return "text-yellow-400";
+      case "TOUGH":
+        return "text-orange-400";
+      case "VERY_TOUGH":
+        return "text-red-400";
+      default:
+        return "text-white";
     }
   };
 
@@ -340,21 +358,29 @@ const PackageDetails = () => {
                     {pkg.title || "Unnamed Package"}
                   </h1>
                   <div className="flex flex-wrap gap-6 text-lg">
-                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      🗓️ {pkg.duration || "N/A"} days
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5" />
+                      {pkg.duration || "N/A"} days
                     </span>
-                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      💰 ${pkg.price || "N/A"}
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                      <CurrencyDollarIcon className="h-5 w-5" />$
+                      {pkg.price || "N/A"}
                     </span>
-                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      ⛰️ {pkg.altitude || "N/A"}m
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                      <img
+                        src="/icons/mountain_peak.png"
+                        alt="Altitude"
+                        className="h-5 w-5"
+                      />
+                      {pkg.altitude || "N/A"}m
                     </span>
-                    <span
-                      className={`bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full ${getDifficultyColor(
-                        pkg.difficulty
-                      )}`}
-                    >
-                      🎯 {formatDifficulty(pkg.difficulty)}
+                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                      <FireIcon
+                        className={`h-5 w-5 ${getDifficultyIconColor(
+                          pkg.difficulty
+                        )}`}
+                      />
+                      {formatDifficulty(pkg.difficulty)}
                     </span>
                   </div>
                 </div>

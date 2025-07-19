@@ -1,4 +1,10 @@
-import { BookmarkIcon, HeartIcon } from "@heroicons/react/24/outline";
+import {
+  BookmarkIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
+  FireIcon,
+  HeartIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -13,6 +19,28 @@ const Bookmarks = () => {
       fetchBookmarks();
     }
   }, [user]);
+
+  const formatDifficulty = (difficulty) => {
+    if (difficulty === "VERY_TOUGH") {
+      return "Very Tough";
+    }
+    return difficulty || "N/A";
+  };
+
+  const getDifficultyIconColor = (difficulty) => {
+    switch (difficulty) {
+      case "EASY":
+        return "text-green-500";
+      case "MEDIUM":
+        return "text-yellow-500";
+      case "TOUGH":
+        return "text-orange-500";
+      case "VERY_TOUGH":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
+    }
+  };
 
   if (!user) {
     return (
@@ -79,7 +107,7 @@ const Bookmarks = () => {
                 <div className="relative h-64">
                   <img
                     src={
-                      bookmark.package.images?.[0]?.image ||
+                      `http://localhost:8000${bookmark.package.images?.[0]?.image}` ||
                       "/images/default-trek.jpg"
                     }
                     alt={bookmark.package.title}
@@ -101,12 +129,44 @@ const Bookmarks = () => {
                     {bookmark.package.description}
                   </p>
 
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="text-2xl font-bold text-blue-600">
-                      ${bookmark.package.price}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {bookmark.package.duration} days
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-1">
+                        <CurrencyDollarIcon className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-bold text-blue-600">
+                          ${bookmark.package.price}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CalendarIcon className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">
+                          {bookmark.package.duration} days
+                        </span>
+                      </div>
+                      {bookmark.package.altitude && (
+                        <div className="flex items-center gap-1">
+                          <img
+                            src="/icons/mountain_peak.png"
+                            alt="Altitude"
+                            className="h-4 w-4"
+                          />
+                          <span className="text-sm text-gray-600">
+                            {bookmark.package.altitude}m
+                          </span>
+                        </div>
+                      )}
+                      {bookmark.package.difficulty && (
+                        <div className="flex items-center gap-1">
+                          <FireIcon
+                            className={`h-4 w-4 ${getDifficultyIconColor(
+                              bookmark.package.difficulty
+                            )}`}
+                          />
+                          <span className="text-sm font-medium text-gray-600">
+                            {formatDifficulty(bookmark.package.difficulty)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

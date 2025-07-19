@@ -1,11 +1,13 @@
 import {
   BellIcon,
+  CalendarIcon,
   CameraIcon,
   EnvelopeIcon,
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
   GlobeAltIcon,
+  LockClosedIcon,
   PencilIcon,
   PhoneIcon,
   ShieldCheckIcon,
@@ -813,27 +815,29 @@ const Profile = () => {
                     {/* Full Name */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <UserIcon className="inline h-4 w-4 mr-1" />
                         Full Name *
                       </label>
-                      <input
-                        type="text"
-                        value={profileData.full_name}
-                        onChange={(e) =>
-                          handleProfileChange("full_name", e.target.value)
-                        }
-                        disabled={!isEditing}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                          errors.full_name
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } ${
-                          !isEditing
-                            ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                            : "bg-white"
-                        }`}
-                        placeholder="Enter your full name"
-                      />
+                      <div className="relative">
+                        <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                          type="text"
+                          value={profileData.full_name}
+                          onChange={(e) =>
+                            handleProfileChange("full_name", e.target.value)
+                          }
+                          disabled={!isEditing}
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                            errors.full_name
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
+                          }`}
+                          placeholder="Enter your full name"
+                        />
+                      </div>
                       {errors.full_name && (
                         <p className="mt-1 text-sm text-red-600">
                           {errors.full_name}
@@ -844,25 +848,27 @@ const Profile = () => {
                     {/* Email */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                         Email Address *
                       </label>
-                      <input
-                        type="email"
-                        value={profileData.email}
-                        onChange={(e) =>
-                          handleProfileChange("email", e.target.value)
-                        }
-                        disabled={!isEditing}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                          errors.email ? "border-red-500" : "border-gray-300"
-                        } ${
-                          !isEditing
-                            ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                            : "bg-white"
-                        }`}
-                        placeholder="Enter your email"
-                      />
+                      <div className="relative">
+                        <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) =>
+                            handleProfileChange("email", e.target.value)
+                          }
+                          disabled={!isEditing}
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                            errors.email ? "border-red-500" : "border-gray-300"
+                          } ${
+                            !isEditing
+                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                              : "bg-white"
+                          }`}
+                          placeholder="Enter your email"
+                        />
+                      </div>
                       {errors.email && (
                         <p className="mt-1 text-sm text-red-600">
                           {errors.email}
@@ -874,25 +880,29 @@ const Profile = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <PhoneIcon className="inline h-4 w-4 mr-1" />
                           Phone Number *
                         </label>
-                        <input
-                          type="tel"
-                          value={profileData.phone}
-                          onChange={(e) =>
-                            handleProfileChange("phone", e.target.value)
-                          }
-                          disabled={!isEditing}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                            errors.phone ? "border-red-500" : "border-gray-300"
-                          } ${
-                            !isEditing
-                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                              : "bg-white"
-                          }`}
-                          placeholder="+1 (555) 123-4567"
-                        />
+                        <div className="relative">
+                          <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                          <input
+                            type="tel"
+                            value={profileData.phone}
+                            onChange={(e) =>
+                              handleProfileChange("phone", e.target.value)
+                            }
+                            disabled={!isEditing}
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                              errors.phone
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } ${
+                              !isEditing
+                                ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                                : "bg-white"
+                            }`}
+                            placeholder="+1 (555) 123-4567"
+                          />
+                        </div>
                         {errors.phone && (
                           <p className="mt-1 text-sm text-red-600">
                             {errors.phone}
@@ -902,32 +912,34 @@ const Profile = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <GlobeAltIcon className="inline h-4 w-4 mr-1" />
                           Country *
                         </label>
-                        <select
-                          value={profileData.country}
-                          onChange={(e) =>
-                            handleProfileChange("country", e.target.value)
-                          }
-                          disabled={!isEditing}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                            errors.country
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } ${
-                            !isEditing
-                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                              : "bg-white"
-                          }`}
-                        >
-                          <option value="">Select Country</option>
-                          {countries.map((country) => (
-                            <option key={country} value={country}>
-                              {country}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="relative">
+                          <GlobeAltIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                          <select
+                            value={profileData.country}
+                            onChange={(e) =>
+                              handleProfileChange("country", e.target.value)
+                            }
+                            disabled={!isEditing}
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                              errors.country
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } ${
+                              !isEditing
+                                ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                                : "bg-white"
+                            }`}
+                          >
+                            <option value="">Select Country</option>
+                            {countries.map((country) => (
+                              <option key={country} value={country}>
+                                {country}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         {errors.country && (
                           <p className="mt-1 text-sm text-red-600">
                             {errors.country}
@@ -942,23 +954,29 @@ const Profile = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Date of Birth *
                         </label>
-                        <input
-                          type="date"
-                          value={profileData.date_of_birth}
-                          onChange={(e) =>
-                            handleProfileChange("date_of_birth", e.target.value)
-                          }
-                          disabled={!isEditing}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                            errors.date_of_birth
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } ${
-                            !isEditing
-                              ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                              : "bg-white"
-                          }`}
-                        />
+                        <div className="relative">
+                          <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                          <input
+                            type="date"
+                            value={profileData.date_of_birth}
+                            onChange={(e) =>
+                              handleProfileChange(
+                                "date_of_birth",
+                                e.target.value
+                              )
+                            }
+                            disabled={!isEditing}
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                              errors.date_of_birth
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } ${
+                              !isEditing
+                                ? "bg-gray-50 text-gray-500 cursor-not-allowed"
+                                : "bg-white"
+                            }`}
+                          />
+                        </div>
                         {errors.date_of_birth && (
                           <p className="mt-1 text-sm text-red-600">
                             {errors.date_of_birth}
@@ -1127,6 +1145,7 @@ const Profile = () => {
                         Current Password *
                       </label>
                       <div className="relative">
+                        <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                           type={showPasswords.current ? "text" : "password"}
                           value={securityData.current_password}
@@ -1136,7 +1155,7 @@ const Profile = () => {
                               e.target.value
                             )
                           }
-                          className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                          className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                             errors.current_password
                               ? "border-red-500"
                               : "border-gray-300"
@@ -1151,7 +1170,7 @@ const Profile = () => {
                               current: !showPasswords.current,
                             })
                           }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                         >
                           {showPasswords.current ? (
                             <EyeSlashIcon className="h-5 w-5" />
@@ -1173,13 +1192,14 @@ const Profile = () => {
                         New Password *
                       </label>
                       <div className="relative">
+                        <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                           type={showPasswords.new ? "text" : "password"}
                           value={securityData.new_password}
                           onChange={(e) =>
                             handleSecurityChange("new_password", e.target.value)
                           }
-                          className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                          className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                             errors.new_password
                               ? "border-red-500"
                               : "border-gray-300"
@@ -1194,7 +1214,7 @@ const Profile = () => {
                               new: !showPasswords.new,
                             })
                           }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                         >
                           {showPasswords.new ? (
                             <EyeSlashIcon className="h-5 w-5" />
@@ -1216,6 +1236,7 @@ const Profile = () => {
                         Confirm New Password *
                       </label>
                       <div className="relative">
+                        <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                           type={showPasswords.confirm ? "text" : "password"}
                           value={securityData.confirm_password}
@@ -1225,7 +1246,7 @@ const Profile = () => {
                               e.target.value
                             )
                           }
-                          className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                          className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                             errors.confirm_password
                               ? "border-red-500"
                               : "border-gray-300"
@@ -1240,7 +1261,7 @@ const Profile = () => {
                               confirm: !showPasswords.confirm,
                             })
                           }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                         >
                           {showPasswords.confirm ? (
                             <EyeSlashIcon className="h-5 w-5" />

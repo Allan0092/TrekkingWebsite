@@ -1,4 +1,10 @@
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import {
+  ArrowRightIcon,
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -109,7 +115,7 @@ const Login = () => {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   id="email"
                   type="email"
@@ -132,7 +138,7 @@ const Login = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -150,9 +156,9 @@ const Login = () => {
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeSlashIcon className="w-5 h-5" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <EyeIcon className="w-5 h-5" />
                   )}
                 </button>
               </div>
@@ -191,7 +197,7 @@ const Login = () => {
               ) : (
                 <>
                   Sign In
-                  <ArrowRight className="ml-2 w-4 h-4" />
+                  <ArrowRightIcon className="ml-2 w-4 h-4" />
                 </>
               )}
             </button>
