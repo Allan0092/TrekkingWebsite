@@ -16,8 +16,11 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 const Booking = () => {
+  const { user } = useAuth();
+
   const [pkg, setPkg] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +47,7 @@ const Booking = () => {
 
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const getPackageId = () => {
     const packageParam = searchParams.get("package");
@@ -56,6 +59,39 @@ const Booking = () => {
 
     return null;
   };
+
+  // Auto-fill Person 1 details when user is logged in
+  useEffect(() => {
+    if (user && people.length > 0) {
+      setPeople((prev) => {
+        const newPeople = [...prev];
+        // Only auto-fill if Person 1's fields are empty
+        if (!newPeople[0].fullName && !newPeople[0].email) {
+          newPeople[0] = {
+            ...newPeople[0],
+            fullName: user.full_name || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            nationality: user.country || "",
+            gender: user.gender || "",
+            dateOfBirth: user.date_of_birth || "",
+
+            dateOfArrival: newPeople[0].dateOfArrival,
+            dateOfDeparture: newPeople[0].dateOfDeparture,
+            room: newPeople[0].room,
+            shareRoomWith: newPeople[0].shareRoomWith,
+          };
+        }
+        return newPeople;
+      });
+
+      if (user.full_name) {
+        toast.info("Your profile details have been pre-filled for Person 1!", {
+          autoClose: 3000,
+        });
+      }
+    }
+  }, [user]);
 
   // Fetch package data from API
   useEffect(() => {
@@ -112,7 +148,9 @@ const Booking = () => {
         }
 
         const person1 = prev[0] || {};
-        return {
+
+        // For new people after Person 1, create empty profiles
+        const newPerson = {
           fullName: "",
           dateOfBirth: "",
           email: "",
@@ -124,6 +162,21 @@ const Booking = () => {
           room: "Single",
           shareRoomWith: "",
         };
+
+        // If this is Person 1 and user is logged in, auto-fill
+        if (i === 0 && user && !person1.fullName && !person1.email) {
+          return {
+            ...newPerson,
+            fullName: user.full_name || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            nationality: user.country || "",
+            gender: user.gender || "",
+            dateOfBirth: user.date_of_birth || "",
+          };
+        }
+
+        return newPerson;
       });
       return newPeople;
     });
@@ -131,7 +184,7 @@ const Booking = () => {
     if (currentPersonIndex >= numPeople) {
       setCurrentPersonIndex(0);
     }
-  }, [numPeople, currentPersonIndex]);
+  }, [numPeople, currentPersonIndex, user]);
 
   const handlePersonChange = (index, field, value) => {
     setPeople((prev) => {
@@ -189,6 +242,29 @@ const Booking = () => {
     }));
   };
 
+  // function to manually clear auto-filled data
+  const clearPersonData = (index) => {
+    if (index === 0) {
+      setPeople((prev) => {
+        const newPeople = [...prev];
+        newPeople[0] = {
+          fullName: "",
+          dateOfBirth: "",
+          email: "",
+          phone: "",
+          nationality: "",
+          gender: "",
+          dateOfArrival: newPeople[0].dateOfArrival,
+          dateOfDeparture: newPeople[0].dateOfDeparture,
+          room: newPeople[0].room,
+          shareRoomWith: newPeople[0].shareRoomWith,
+        };
+        return newPeople;
+      });
+      toast.info("Person 1 details cleared");
+    }
+  };
+
   const getAvailableRoomMates = (currentIndex) => {
     const currentPerson = people[currentIndex];
     if (!currentPerson || currentPerson.room !== "Shared") return [];
@@ -200,7 +276,6 @@ const Booking = () => {
           index !== currentIndex &&
           person.fullName.trim() !== "" &&
           person.room === "Shared" &&
-          // Modified condition: either not paired or paired with currentPerson
           (!person.shareRoomWith ||
             person.shareRoomWith === currentPerson.fullName)
       )
@@ -263,7 +338,6 @@ const Booking = () => {
         if (!person.shareRoomWith) {
           errors[`${index}-shareRoomWith`] = "Please select a roommate";
         } else {
-          // Check if selected roommate exists and has Shared room selected
           const roommateIndex = people.findIndex(
             (p) => p.fullName === person.shareRoomWith
           );
@@ -274,17 +348,15 @@ const Booking = () => {
         }
       }
 
-      // Date of birth validation - can't be today/future & must be >1 year old
+      // Date of birth validation
       if (person.dateOfBirth) {
         const today = new Date();
         const birthDate = new Date(person.dateOfBirth);
 
-        // Check if birth date is today or in the future
         if (birthDate >= new Date(today.setHours(0, 0, 0, 0))) {
           errors[`${index}-dateOfBirth`] =
             "Date of birth cannot be today or in the future";
         } else {
-          // Check if person is at least one year old
           const oneYearAgo = new Date();
           oneYearAgo.setFullYear(today.getFullYear() - 1);
 
@@ -401,17 +473,22 @@ const Booking = () => {
       });
 
       setShowModal(false);
-      toast.success("Booking confirmed! You will receive a confirmation email shortly.", {
-        autoClose: 7000,
-      });
-      
+      toast.success(
+        "Booking confirmed! You will receive a confirmation email shortly.",
+        {
+          autoClose: 7000,
+        }
+      );
+
       // Reset form or redirect
       setTimeout(() => {
         navigate("/packages");
       }, 2000);
     } catch (error) {
       console.error("Booking error:", error);
-      toast.error("There was an error processing your booking. Please try again.");
+      toast.error(
+        "There was an error processing your booking. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -496,6 +573,17 @@ const Booking = () => {
             Secure your spot on this incredible adventure. Fill in the details
             below to complete your booking.
           </p>
+          {user && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-md mx-auto">
+              <p className="text-sm text-blue-700">
+                <span className="font-medium">
+                  Welcome, {user.full_name || user.email}!
+                </span>
+                <br />
+                Your profile details have been pre-filled for Person 1.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Package Overview */}
@@ -605,9 +693,31 @@ const Booking = () => {
             </div>
 
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                Person {currentPersonIndex + 1} Details
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-gray-700">
+                  Person {currentPersonIndex + 1} Details
+                </h3>
+                {/* Add clear button for Person 1 if auto-filled */}
+                {currentPersonIndex === 0 && user && currentPerson.fullName && (
+                  <button
+                    type="button"
+                    onClick={() => clearPersonData(0)}
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Clear auto-filled data
+                  </button>
+                )}
+              </div>
+
+              {/* Show auto-fill indicator for Person 1 */}
+              {currentPersonIndex === 0 && user && currentPerson.fullName && (
+                <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-sm text-green-700">
+                    ✅ Auto-filled from your profile. You can edit these details
+                    if needed.
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Full Name */}
@@ -961,7 +1071,6 @@ const Booking = () => {
 
             {priceData.items.length > 0 ? (
               <div className="space-y-6">
-                {/* Items Table */}
                 <div className="overflow-hidden border border-gray-200 rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -1011,7 +1120,6 @@ const Booking = () => {
                   </table>
                 </div>
 
-                {/* Summary Calculations */}
                 <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                   <div className="flex justify-between items-center text-gray-700">
                     <span className="text-base">Subtotal</span>
@@ -1048,7 +1156,6 @@ const Booking = () => {
                     </div>
                   </div>
 
-                  {/* Additional Info */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
@@ -1111,7 +1218,6 @@ const Booking = () => {
                 Confirm Your Booking
               </h3>
 
-              {/* Booking Details */}
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600">Package:</span>
