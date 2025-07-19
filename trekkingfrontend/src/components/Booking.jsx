@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Booking = () => {
   const [pkg, setPkg] = useState(null);
@@ -43,6 +43,7 @@ const Booking = () => {
 
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const getPackageId = () => {
     const packageParam = searchParams.get("package");
@@ -1079,12 +1080,19 @@ const Booking = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <button
               type="submit"
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 transform hover:scale-105"
+              className="px-8 py-4 bg-gradient-to-r bg-blue-500 border-black text-white text-lg font-semibold rounded-xl hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
             >
-              Complete Booking
+              Submit
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white text-lg font-semibold rounded-xl focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition-all duration-200 transform hover:scale-105"
+            >
+              Cancel
             </button>
           </div>
         </form>
