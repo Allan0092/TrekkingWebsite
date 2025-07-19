@@ -17,8 +17,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import { useBookmarks } from "../hooks/useBookmarks";
 import { useAuth } from "../contexts/AuthContext";
+import { useBookmarks } from "../hooks/useBookmarks";
 
 const PackageList = () => {
   const [packages, setPackages] = useState([]);
@@ -37,7 +37,8 @@ const PackageList = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } = useBookmarks();
+  const { bookmarkStatus, toggleBookmark, checkBookmarkStatus } =
+    useBookmarks();
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -188,14 +189,23 @@ const PackageList = () => {
     ),
   };
 
-  // Check bookmark status for visible packages
+  // Check bookmark status for visible packages - Fixed with proper dependency management
   useEffect(() => {
     if (user && displayPackages.length > 0) {
-      displayPackages.forEach(pkg => {
-        checkBookmarkStatus(pkg.id);
-      });
+      const checkAllBookmarks = async () => {
+        const promises = displayPackages.map((pkg) =>
+          checkBookmarkStatus(pkg.id)
+        );
+        await Promise.all(promises);
+      };
+
+      checkAllBookmarks();
     }
-  }, [user, displayPackages, checkBookmarkStatus]);
+  }, [
+    user,
+    displayPackages.map((pkg) => pkg.id).join(","),
+    checkBookmarkStatus,
+  ]);
 
   const handleBookmark = async (pkgId) => {
     await toggleBookmark(pkgId, navigate);
@@ -602,14 +612,14 @@ const PackageList = () => {
                     onClick={() => handleBookmark(pkg.id)}
                     className={`absolute top-4 right-4 p-2 backdrop-blur-sm rounded-full transition-all duration-200 ${
                       bookmarkStatus[pkg.id]
-                        ? 'bg-red-500 text-white hover:bg-red-600' 
-                        : 'bg-white/80 text-gray-700 hover:bg-white'
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "bg-white/80 text-gray-700 hover:bg-white"
                     }`}
                   >
-                    <BookmarkIcon 
+                    <BookmarkIcon
                       className={`h-5 w-5 ${
-                        bookmarkStatus[pkg.id] ? 'fill-current' : ''
-                      }`} 
+                        bookmarkStatus[pkg.id] ? "fill-current" : ""
+                      }`}
                     />
                   </button>
                 </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -11,7 +11,7 @@ export const useBookmarks = () => {
   const getAuthToken = () => localStorage.getItem("authToken");
 
   // Fetch user's bookmarks
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -32,87 +32,93 @@ export const useBookmarks = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Toggle bookmark for a package
-  const toggleBookmark = async (packageId, navigate = null) => {
-    if (!user) {
-      toast.info("Please log in to bookmark packages");
-      if (navigate) navigate("/login");
-      return false;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/packages/${packageId}/bookmark/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Token ${getAuthToken()}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-
-        // Update bookmark status
-        setBookmarkStatus((prev) => ({
-          ...prev,
-          [packageId]: data.bookmarked,
-        }));
-
-        // Show toast notification
-        if (data.bookmarked) {
-          toast.success("Package bookmarked!");
-        } else {
-          toast.success("Bookmark removed!");
-        }
-
-        // Refresh bookmarks list
-        fetchBookmarks();
-
-        return data.bookmarked;
-      } else {
-        toast.error("Failed to update bookmark");
+  const toggleBookmark = useCallback(
+    async (packageId, navigate = null) => {
+      if (!user) {
+        toast.info("Please log in to bookmark packages");
+        if (navigate) navigate("/login");
         return false;
       }
-    } catch (error) {
-      console.error("Error toggling bookmark:", error);
-      toast.error("Error updating bookmark");
-      return false;
-    }
-  };
+
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/packages/${packageId}/bookmark/`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Token ${getAuthToken()}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Update bookmark status
+          setBookmarkStatus((prev) => ({
+            ...prev,
+            [packageId]: data.bookmarked,
+          }));
+
+          // Show toast notification
+          if (data.bookmarked) {
+            toast.success("Package bookmarked!");
+          } else {
+            toast.success("Bookmark removed!");
+          }
+
+          // Refresh bookmarks list
+          fetchBookmarks();
+
+          return data.bookmarked;
+        } else {
+          toast.error("Failed to update bookmark");
+          return false;
+        }
+      } catch (error) {
+        console.error("Error toggling bookmark:", error);
+        toast.error("Error updating bookmark");
+        return false;
+      }
+    },
+    [user, fetchBookmarks]
+  );
 
   // Check bookmark status for a package
-  const checkBookmarkStatus = async (packageId) => {
-    if (!user) return false;
+  const checkBookmarkStatus = useCallback(
+    async (packageId) => {
+      if (!user) return false;
 
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/packages/${packageId}/bookmark/status/`,
-        {
-          headers: {
-            Authorization: `Token ${getAuthToken()}`,
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/packages/${packageId}/bookmark/status/`,
+          {
+            headers: {
+              Authorization: `Token ${getAuthToken()}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setBookmarkStatus((prev) => ({
+            ...prev,
+            [packageId]: data.bookmarked,
+          }));
+          return data.bookmarked;
         }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setBookmarkStatus((prev) => ({
-          ...prev,
-          [packageId]: data.bookmarked,
-        }));
-        return data.bookmarked;
+      } catch (error) {
+        console.error("Error checking bookmark status:", error);
       }
-    } catch (error) {
-      console.error("Error checking bookmark status:", error);
-    }
-    return false;
-  };
+      return false;
+    },
+    [user]
+  );
 
   // Initialize bookmarks on user login
   useEffect(() => {
@@ -122,7 +128,7 @@ export const useBookmarks = () => {
       setBookmarks([]);
       setBookmarkStatus({});
     }
-  }, [user]);
+  }, [user, fetchBookmarks]);
 
   return {
     bookmarks,
