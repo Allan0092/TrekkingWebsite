@@ -30,4 +30,8 @@ urlpatterns = [
     path('bookmarks/', views.user_bookmarks, name='user_bookmarks'),
     path('packages/<int:package_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
     path('packages/<int:package_id>/bookmark/status/', views.check_bookmark_status, name='check_bookmark_status'),
+
+    # Account deletion URLs
+    path('account/delete/', views.delete_user_account, name='delete_user_account'),
+    path('account/verify-password/', views.verify_password_for_deletion, name='verify_password_for_deletion'),
 ]

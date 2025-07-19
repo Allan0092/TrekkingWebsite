@@ -579,3 +579,76 @@ def check_bookmark_status(request, package_id):
         return Response({
             'error': 'Package not found'
         }, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_user_account(request):
+    """Delete user account permanently"""
+    try:
+        user = request.user
+        
+        # Log the deletion for audit purposes
+        print(f"User account deletion requested: {user.email}")
+        
+        # Delete user's token first to invalidate session
+        try:
+            user.auth_token.delete()
+        except:
+            pass
+        
+        # Delete related data (optional - you might want to keep some data for business purposes)
+        # Delete user bookmarks
+        UserBookmark.objects.filter(user=user).delete()
+        
+        # Delete user profile
+        UserProfile.objects.filter(user=user).delete()
+        
+        # Delete verification tokens
+        EmailVerificationToken.objects.filter(user=user).delete()
+        PasswordResetToken.objects.filter(user=user).delete()
+        
+        # Finally delete the user account
+        user_email = user.email  # Store for response
+        user.delete()
+        
+        return Response({
+            'message': f'Account {user_email} has been permanently deleted',
+            'success': True
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'error': f'Failed to delete account: {str(e)}',
+            'success': False
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def verify_password_for_deletion(request):
+    """Verify user password before account deletion"""
+    try:
+        password = request.data.get('password')
+        
+        if not password:
+            return Response({
+                'error': 'Password is required',
+                'valid': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if password is correct
+        if not check_password(password, request.user.password):
+            return Response({
+                'error': 'Invalid password',
+                'valid': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'message': 'Password verified successfully',
+            'valid': True
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'error': f'Password verification failed: {str(e)}',
+            'valid': False
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
