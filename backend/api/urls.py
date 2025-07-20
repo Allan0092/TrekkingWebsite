@@ -18,9 +18,14 @@ urlpatterns = [
     
     # Email verification and password reset
     path('auth/verify-email/<str:token>/', views.verify_email, name='verify_email'),
-    path('auth/password-reset/', views.request_password_reset, name='request_password_reset'),
-    path('auth/password-reset/confirm/', views.confirm_password_reset, name='confirm_password_reset'),
+    path('auth/password-reset/', views. password_reset_request, name='request_password_reset'),
+    path('auth/password-reset/confirm/', views.password_reset_confirm, name='confirm_password_reset'),
 
+    # Password Reset URLs
+    path('auth/password-reset-request/', views.password_reset_request, name='password_reset_request'),
+    path('auth/validate-reset-token/<uuid:token>/', views.validate_reset_token, name='validate_reset_token'),
+    path('auth/password-reset-confirm/', views.password_reset_confirm, name='password_reset_confirm'),
+    
     # Package URLs - Public
     path('packages/', views.PackageListView.as_view(), name='package_list'),
     path('packages/<int:pk>/', views.PackageDetailView.as_view(), name='package_detail'),

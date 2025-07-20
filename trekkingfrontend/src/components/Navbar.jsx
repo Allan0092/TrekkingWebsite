@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, ChevronDown, Menu, Search, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +11,8 @@ const Navbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout, loading } = useAuth();
+
+  const userMenuRef = useRef(null);
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -26,6 +28,22 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    if (isUserMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -138,7 +156,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* User Profile Dropdown */}
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -194,13 +212,6 @@ const Navbar = () => {
                             onClick={() => setIsUserMenuOpen(false)}
                           >
                             My Bookmarks
-                          </Link>
-                          <Link
-                            to="/bookings"
-                            className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            My Bookings
                           </Link>
                           {user.is_staff && (
                             <Link

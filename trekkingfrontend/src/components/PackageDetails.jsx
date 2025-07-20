@@ -226,7 +226,7 @@ const PackageDetails = () => {
   const packingList = [
     {
       category: "General",
-      icon: "🎒", // Backpack emoji
+      icon: "🎒",
       items: [
         "Backpack (40-60L)",
         "Trekking poles",
@@ -236,7 +236,7 @@ const PackageDetails = () => {
     },
     {
       category: "Upper Body",
-      icon: "👕", // T-shirt emoji
+      icon: "👕",
       items: [
         "Fleece jacket",
         "Waterproof/windproof jacket",
@@ -246,7 +246,7 @@ const PackageDetails = () => {
     },
     {
       category: "Torso",
-      icon: "🧥", // Coat emoji
+      icon: "🧥",
       items: [
         "Insulated jacket (down or synthetic)",
         "Lightweight pullover",
@@ -255,7 +255,7 @@ const PackageDetails = () => {
     },
     {
       category: "Lower Body",
-      icon: "👖", // Jeans emoji
+      icon: "👖",
       items: [
         "Trekking pants",
         "Waterproof pants",
@@ -265,7 +265,7 @@ const PackageDetails = () => {
     },
     {
       category: "Hands",
-      icon: "🧤", // Gloves emoji
+      icon: "🧤",
       items: [
         "Lightweight gloves",
         "Insulated gloves",
@@ -274,7 +274,7 @@ const PackageDetails = () => {
     },
     {
       category: "Feet",
-      icon: "👢", // Boot emoji
+      icon: "👢",
       items: [
         "Hiking boots (broken-in)",
         "Camp shoes or sandals",
@@ -284,7 +284,7 @@ const PackageDetails = () => {
     },
     {
       category: "Undergarments",
-      icon: "🩲", // Underwear emoji
+      icon: "🩲",
       items: [
         "Moisture-wicking underwear",
         "Thermal underwear",
@@ -293,7 +293,7 @@ const PackageDetails = () => {
     },
     {
       category: "First Aid Kits and Medications",
-      icon: "🏥", // Hospital emoji
+      icon: "🏥",
       items: [
         "Personal medications",
         "Bandages and antiseptic",
@@ -303,7 +303,7 @@ const PackageDetails = () => {
     },
     {
       category: "Other Essentials",
-      icon: "☀️", // Sun emoji
+      icon: "☀️",
       items: [
         "Sunglasses (UV protection)",
         "Sunscreen (SPF 50+)",

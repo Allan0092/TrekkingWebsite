@@ -390,11 +390,11 @@ const Booking = () => {
       }
     });
 
-    // Room costs - avoid double charging for shared rooms
+    // Room costs
     const processedSharedRooms = new Set();
 
     people.forEach((person, i) => {
-      if (!person.fullName) return; // Skip if person doesn't have a name
+      if (!person.fullName) return;
 
       if (person.room === "Single") {
         items.push({

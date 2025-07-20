@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Package, PackageImage, Itinerary
+from .models import Package, PackageImage, Itinerary, PasswordResetToken, EmailVerificationToken
 
 class PackageImageInline(admin.TabularInline):
     model = PackageImage
@@ -35,3 +35,23 @@ class ItineraryAdmin(admin.ModelAdmin):
     list_display = ('package', 'day', 'title', 'icon')
     list_filter = ('package', 'icon')
     search_fields = ('title', 'description')
+
+@admin.register(PasswordResetToken)
+class PasswordResetTokenAdmin(admin.ModelAdmin):
+    list_display = ['user', 'token', 'created_at', 'expires_at', 'used']
+    list_filter = ['used', 'created_at', 'expires_at']
+    search_fields = ['user__email', 'user__full_name']
+    readonly_fields = ['token', 'created_at']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
+@admin.register(EmailVerificationToken)
+class EmailVerificationTokenAdmin(admin.ModelAdmin):
+    list_display = ['user', 'token', 'created_at', 'expires_at']
+    list_filter = ['created_at', 'expires_at']
+    search_fields = ['user__email', 'user__full_name']
+    readonly_fields = ['token', 'created_at']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')

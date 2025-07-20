@@ -6,7 +6,7 @@ import {
   ChevronRightIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
-  FireIcon, // Changed from SparklesIcon
+  FireIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -189,7 +189,7 @@ const PackageList = () => {
     ),
   };
 
-  // Check bookmark status for visible packages - Fixed with proper dependency management
+  // Check bookmark status for visible packages
   useEffect(() => {
     if (user && displayPackages.length > 0) {
       const checkAllBookmarks = async () => {
@@ -586,7 +586,7 @@ const PackageList = () => {
           </div>
         )}
 
-        {/* Package List - Full Width Cards */}
+        {/* Package List */}
         <div className="space-y-6">
           {displayPackages.map((pkg) => (
             <div
@@ -651,7 +651,7 @@ const PackageList = () => {
                         {pkg.description || "No description available."}
                       </p>
 
-                      {/* Stats Grid - Updated to include price and remove region */}
+                      {/* Stats Grid */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                         <div className="text-center">
                           <CalendarIcon className="h-6 w-6 text-gray-400 mx-auto mb-2" />

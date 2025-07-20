@@ -1,8 +1,6 @@
 import {
-  CalendarIcon,
   ChevronDownIcon,
   CurrencyDollarIcon,
-  FireIcon,
   ShieldCheckIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
@@ -269,7 +267,6 @@ const Homepage = () => {
               >
                 View All Packages
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
@@ -329,42 +326,21 @@ const Homepage = () => {
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold text-neutral-900 mb-2">
+                  <h3 className="text-2xl font-bold text-neutral-900 mb-3">
                     {pkg.title || "Unnamed Package"}
                   </h3>
-                  <p className="text-lg text-neutral-600 mb-4 flex items-center flex-wrap gap-4">
-                    <span className="flex items-center gap-1 font-semibold text-primary-600">
-                      <CurrencyDollarIcon className="h-4 w-4" />$
-                      {pkg.price || "N/A"}
-                    </span>
-                    <span className="mx-2 text-neutral-400">|</span>
-                    <span className="flex items-center gap-1">
-                      <CalendarIcon className="h-4 w-4" />
-                      {pkg.duration || "N/A"} days
-                    </span>
-                    {pkg.altitude && (
-                      <>
-                        <span className="mx-2 text-neutral-400">|</span>
-                        <span className="flex items-center gap-1">
-                          <img
-                            src="/icons/mountain_peak.png"
-                            alt="Altitude"
-                            className="h-4 w-4"
-                          />
-                          {pkg.altitude}m
-                        </span>
-                      </>
-                    )}
-                    <span className="mx-2 text-neutral-400">|</span>
-                    <span className="flex items-center gap-1 text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
-                      <FireIcon
-                        className={`h-3 w-3 ${getDifficultyIconColor(
-                          pkg.difficulty
-                        )}`}
-                      />
-                      {formatDifficulty(pkg.difficulty)}
-                    </span>
-                  </p>
+
+                  {/* Overview Text with Truncation */}
+                  <div className="mb-4">
+                    <p className="text-neutral-600 leading-relaxed text-base">
+                      {pkg.description
+                        ? pkg.description.length > 150
+                          ? `${pkg.description.slice(0, 150).trim()}...`
+                          : pkg.description
+                        : "Discover an amazing trekking experience in the heart of the Himalayas. Join us for an unforgettable adventure that will create lasting memories..."}
+                    </p>
+                  </div>
+
                   <Link
                     to={`/packages/${pkg.id}`}
                     className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold transition-colors duration-200"

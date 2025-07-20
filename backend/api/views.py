@@ -18,10 +18,7 @@ import os
 
 from .models import UserProfile, EmailVerificationToken, PasswordResetToken, Package, UserBookmark
 from .serializers import (
-    PackageImageSerializer, PackageSerializer,
-    UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer,
-    PasswordChangeSerializer, PasswordResetRequestSerializer, 
-    PasswordResetConfirmSerializer, UserBookmarkSerializer
+    PackageImageSerializer, PackageSerializer, UserProfileSerializer, UserBookmarkSerializer
 )
 
 # User Authentication Views
@@ -436,53 +433,195 @@ def verify_email(request, token):
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-def request_password_reset(request):
-    """Request password reset"""
-    serializer = PasswordResetRequestSerializer(data=request.data)
-    
-    if serializer.is_valid():
-        email = serializer.validated_data['email']
-        user = User.objects.get(email=email)
+def password_reset_request(request):
+    """Request password reset - send email with reset link"""
+    try:
+        email = request.data.get('email', '').strip().lower()
         
-        # Create password reset token
-        token = str(uuid.uuid4())
-        PasswordResetToken.objects.create(
-            user=user,
-            token=token,
-            expires_at=timezone.now() + timedelta(hours=1)
-        )
-        
-        # Send password reset email
+        if not email:
+            return Response({
+                'message': 'Email address is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if user exists
         try:
-            reset_link = f"{settings.FRONTEND_URL}/reset-password/{token}"
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            # For security, always return success even if email doesn't exist
+            return Response({
+                'message': 'If an account with that email exists, we\'ve sent password reset instructions.'
+            }, status=status.HTTP_200_OK)
+
+        # Delete any existing unused tokens for this user
+        PasswordResetToken.objects.filter(user=user, used=False).delete()
+
+        # Create new reset token
+        reset_token = PasswordResetToken.objects.create(
+            user=user,
+            token=str(uuid.uuid4()),  
+            expires_at=timezone.now() + timedelta(hours=1)  # 1 hour expiry
+        )
+
+        # Create reset URL
+        reset_url = f"http://localhost:5173/reset-password/{reset_token.token}"
+
+        message = f"""
+        Hi {user.first_name or user.email},
+
+        You requested to reset your password for your Himalaya Adventure account.
+
+        Click the link below to reset your password:
+        {reset_url}
+
+        This link will expire in 1 hour for security reasons.
+
+        If you didn't request this password reset, please ignore this email or contact our support team.
+
+        Best regards,
+        The Himalaya Adventure Team
+        """
+        # Email content
+        subject = 'Reset Your Himalaya Adventure Password'
+        
+        html_message = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 28px;">🏔️ Reset Your Password</h1>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e9ecef;">
+                <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+                    Hi <strong>{user.first_name or user.email}</strong>,
+                </p>
+                
+                <p style="font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 25px;">
+                    You requested to reset your password for your Himalaya Adventure account. 
+                    Click the button below to create a new password:
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_url}" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; 
+                              padding: 15px 30px; 
+                              text-decoration: none; 
+                              border-radius: 50px; 
+                              font-weight: bold; 
+                              font-size: 16px;
+                              display: inline-block;
+                              box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                        Reset My Password
+                    </a>
+                </div>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 25px 0;">
+                    <p style="color: #856404; margin: 0; font-size: 14px;">
+                        ⚠️ <strong>Security Notice:</strong> This link will expire in 1 hour for your security.
+                    </p>
+                </div>
+                
+                <p style="font-size: 14px; color: #6c757d; margin-bottom: 15px;">
+                    If the button doesn't work, copy and paste this link into your browser:
+                </p>
+                <p style="font-size: 12px; color: #6c757d; word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                    {reset_url}
+                </p>
+                
+                <hr style="border: none; border-top: 1px solid #e9ecef; margin: 25px 0;">
+                
+                <p style="font-size: 14px; color: #6c757d; margin: 0;">
+                    If you didn't request this password reset, please ignore this email or contact our support team.
+                </p>
+                
+                <p style="font-size: 14px; color: #333; margin-top: 20px;">
+                    Best regards,<br>
+                    <strong>The Himalaya Adventure Team</strong>
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+
+        try:
             send_mail(
-                subject='Password Reset - Trekking Website',
-                message=f'Click the link to reset your password: {reset_link}',
+                subject=subject,
+                message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
+                html_message=html_message,
                 fail_silently=False,
             )
+            
+            return Response({
+                'message': 'Password reset email sent successfully!'
+            }, status=status.HTTP_200_OK)
+            
         except Exception as e:
-            print(f"Failed to send password reset email: {e}")
-        
-        return Response({'message': 'Password reset email sent'})
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            print(f"Email sending error: {str(e)}")
+            return Response({
+                'message': 'Failed to send password reset email. Please try again later.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except Exception as e:
+        print(f"Password reset request error: {str(e)}")
+        return Response({
+            'message': 'An error occurred. Please try again later.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-def confirm_password_reset(request):
-    """Confirm password reset with token"""
-    serializer = PasswordResetConfirmSerializer(data=request.data)
-    
-    if serializer.is_valid():
-        token = serializer.validated_data['token']
-        new_password = serializer.validated_data['new_password']
+def password_reset_confirm(request):
+    """Confirm password reset with new password"""
+    try:
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
         
-        reset_token = PasswordResetToken.objects.get(token=token)
+        if not token or not new_password:
+            return Response({
+                'message': 'Token and new password are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate password strength
+        if len(new_password) < 8:
+            return Response({
+                'message': 'Password must be at least 8 characters long'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not any(c.isupper() for c in new_password):
+            return Response({
+                'message': 'Password must contain at least one uppercase letter'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not any(c.islower() for c in new_password):
+            return Response({
+                'message': 'Password must contain at least one lowercase letter'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not any(c.isdigit() for c in new_password):
+            return Response({
+                'message': 'Password must contain at least one number'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            reset_token = PasswordResetToken.objects.get(token=token)
+        except PasswordResetToken.DoesNotExist:
+            return Response({
+                'message': 'Invalid reset token'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if reset_token.used:
+            return Response({
+                'message': 'This reset link has already been used'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if reset_token.is_expired():
+            return Response({
+                'message': 'This reset link has expired'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update user password
         user = reset_token.user
-        
-        # Update password
         user.set_password(new_password)
         user.save()
         
@@ -490,12 +629,18 @@ def confirm_password_reset(request):
         reset_token.used = True
         reset_token.save()
         
-        # Delete old auth tokens
-        Token.objects.filter(user=user).delete()
+        # Delete all other reset tokens for this user
+        PasswordResetToken.objects.filter(user=user).exclude(id=reset_token.id).delete()
         
-        return Response({'message': 'Password reset successful'})
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'message': 'Password reset successful! You can now log in with your new password.'
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Password reset confirm error: {str(e)}")
+        return Response({
+            'message': 'An error occurred while resetting your password'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Package views
 class PackageListView(generics.ListAPIView):
@@ -673,7 +818,6 @@ def verify_password_for_deletion(request):
             'valid': False
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def upload_profile_picture(request):
@@ -755,7 +899,6 @@ def upload_profile_picture(request):
             'error': f'Failed to upload profile picture: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def delete_profile_picture(request):
@@ -788,4 +931,71 @@ def delete_profile_picture(request):
     except Exception as e:
         return Response({
             'error': f'Failed to delete profile picture: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def verify_password(request):
+    """Verify user's current password (for account deletion confirmation)"""
+    try:
+        password = request.data.get('password')
+        
+        if not password:
+            return Response({
+                'error': 'Password is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if check_password(password, request.user.password):
+            return Response({
+                'valid': True,
+                'message': 'Password verified successfully'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'valid': False,
+                'error': 'Invalid password'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        print(f"Password verification error: {str(e)}")
+        return Response({
+            'error': 'An error occurred while verifying password'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def validate_reset_token(request, token):
+    """Validate if reset token is valid and not expired"""
+    try:
+        # Remove UUID validation since we're now using string tokens
+        print(f"Validating token: {token}")
+        
+        # Query using string token directly
+        reset_token = PasswordResetToken.objects.get(token=token)
+        print(f"Found token for user: {reset_token.user.email}")
+        
+        if reset_token.used:
+            return Response({
+                'error': 'This reset link has already been used'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if reset_token.is_expired():
+            return Response({
+                'error': 'This reset link has expired'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'message': 'Token is valid',
+            'email': reset_token.user.email
+        }, status=status.HTTP_200_OK)
+        
+    except PasswordResetToken.DoesNotExist:
+        print(f"Token {token} not found in database")
+        return Response({
+            'error': 'Invalid reset link'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        print(f"Token validation error: {str(e)}")
+        return Response({
+            'error': 'An error occurred while validating the token'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

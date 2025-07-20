@@ -13,6 +13,7 @@ import ContactUs from "./components/ContactUs";
 import EmailVerification from "./components/EmailVerification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
+import ForgotPassword from "./components/ForgotPassword";
 import Homepage from "./components/Homepage";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
@@ -20,6 +21,7 @@ import NotFound from "./components/NotFound";
 import PackageDetails from "./components/PackageDetails";
 import PackageList from "./components/PackageList";
 import Profile from "./components/Profile";
+import ResetPassword from "./components/ResetPassword";
 import SignUp from "./components/SignUp";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ScrollToTop from "./utils/ScrollToTop";
@@ -88,6 +90,11 @@ const AppContent = () => {
                     <SignUp />
                   </PublicRoute>
                 }
+              />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
               />
 
               {/* Protected routes - requires authentication */}

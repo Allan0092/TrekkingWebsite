@@ -6,7 +6,7 @@ import {
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -179,12 +179,12 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-              <a
-                href="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button
@@ -207,12 +207,12 @@ const Login = () => {
           <div className="text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <a
-                href="/signup"
+              <Link
+                to="/signup"
                 className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
               >
                 Sign up for free
-              </a>
+              </Link>
             </p>
           </div>
 
