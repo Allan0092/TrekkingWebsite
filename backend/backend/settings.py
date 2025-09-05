@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'trek_data',
-        'USER': 'postgres',
+        'USER': 'allan_psql',
         'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '5432',
